@@ -1,0 +1,22 @@
+{
+  "name": "api-shareameal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CKleijn/API-ShareAMeal.git"
+  },
+  "author": "Calvin Kleijn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CKleijn/API-ShareAMeal/issues"
+  },
+  "homepage": "https://github.com/CKleijn/API-ShareAMeal#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
