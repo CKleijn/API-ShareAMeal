@@ -1,21 +1,41 @@
 // Default settings
-const http = require('http');
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+const http = require('http')
+const express = require('express')
+const app = express()
+const port = process.env.PORT || 3000
 
-// A final user object to use in the response
-const user = [{ 
-    id: 0,
-    firstName: 'John',
-    lastName: 'Doe',
-    street: 'Lovensdijkstraat 61',
-    city: 'Breda',
-    isActive: true,
-    emailAdress: 'j.doe@server.com',
-    password: 'secret',
-    phoneNumber: '06 12425475'  
-}]
+// Use body-parser
+const bodyParser = require("body-parser")
+app.use(bodyParser.json())
+
+// Create a database array with an id
+let database = 
+[
+    { 
+        id: 0,
+        firstName: 'John',
+        lastName: 'Doe',
+        street: 'Lovensdijkstraat 61',
+        city: 'Breda',
+        isActive: true,
+        emailAdress: 'j.doe@server.com',
+        password: 'secret',
+        phoneNumber: '06 12425475'  
+    },
+    { 
+        id: 1,
+        firstName: 'Jane',
+        lastName: 'Doe',
+        street: 'Lovensdijkstraat 61',
+        city: 'Breda',
+        isActive: true,
+        emailAdress: 'j.doe@server.com',
+        password: 'secret',
+        phoneNumber: '06 12425475'  
+    },
+]
+
+let id = 1
 
 // All user routes
 app.route('/user')
@@ -23,7 +43,7 @@ app.route('/user')
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             res.status(200).json({
                 status: 200,
-                result: user
+                result: database
             })
         } else {
             res.status(401).json({
@@ -31,32 +51,30 @@ app.route('/user')
                 result: 'Forbidden'
             })
         }
-        res.end();
+        res.end()
     })
     .post((req, res) => {
-        console.log('Got a POST request at /user')
-        res.send('Got a POST request at /user')
-        res.end();
+        let user = req.body
+        id++
+
+        user = {
+            id,
+            ...user
+        }
+
+        database.push(user)
+
+        res.status(201).json({
+            status: 201,
+            result: database
+        })
+        res.end()
     })
 
 app.get('/user/profile', (req, res) => {
     if(res.statusCode >= 200 && res.statusCode <= 299) {
-        res.status(200).json({
-            status: 200,
-            result: user
-        })
-    } else {
-        res.status(401).json({
-            status: 401,
-            result: 'Forbidden'
-        })
-    }
-    res.end();
-});
-
-app.route('/user/:userId')
-    .get((req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
+        let user = database.filter((item) => item.id == 0)
+        if(user.length > 0) {
             res.status(200).json({
                 status: 200,
                 result: user
@@ -67,7 +85,38 @@ app.route('/user/:userId')
                 result: 'Forbidden'
             })
         }
-        res.end();
+    } else {
+        res.status(401).json({
+            status: 401,
+            result: 'Forbidden'
+        })
+    }
+    res.end()
+})
+
+app.route('/user/:userId')
+    .get((req, res) => {
+        if(res.statusCode >= 200 && res.statusCode <= 299) {
+            const userId = req.params.userId
+            let user = database.filter((item) => item.id == userId)
+            if(user.length > 0) {
+                res.status(200).json({
+                    status: 200,
+                    result: user
+                })
+            } else {
+                res.status(401).json({
+                    status: 401,
+                    result: 'Forbidden'
+                })
+            }
+        } else {
+            res.status(401).json({
+                status: 401,
+                result: 'Forbidden'
+            })
+        }
+        res.end()
     })
     .put((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
@@ -79,19 +128,31 @@ app.route('/user/:userId')
                 result: 'Forbidden'
             })
         }
-        res.end();
+        res.end()
     })
     .delete((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
-            console.log('Got a DELETE request at /user/:userId')
-            res.send('Got a DELETE request at /user/:userId')
+            const userId = req.params.userId
+            let user = database.filter((item) => item.id == userId)
+            if(user.length > 0) {
+                database.splice(userId)
+                res.status(200).json({
+                    status: 200,
+                    result: database
+                })
+            } else {
+                res.status(401).json({
+                    status: 401,
+                    result: 'Forbidden'
+                })
+            }
         } else {
             res.status(401).json({
                 status: 401,
                 result: 'Forbidden'
             })
         }
-        res.end();
+        res.end()
     })
 
 app.all('*', (req, res) => {
@@ -103,5 +164,5 @@ app.all('*', (req, res) => {
 
 // Show which port is set available for the app
 app.listen(port, () => {
-    console.log('App listening on port ' + port);
-});
+    console.log('App listening on port ' + port)
+})
