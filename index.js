@@ -18,7 +18,7 @@ let database =
         street: 'Lovensdijkstraat 61',
         city: 'Breda',
         isActive: true,
-        emailAdress: 'j.doe@server.com',
+        emailAdress: 'john.doe@server.com',
         password: 'secret',
         phoneNumber: '06 12425475'  
     },
@@ -26,12 +26,12 @@ let database =
         id: 1,
         firstName: 'Jane',
         lastName: 'Doe',
-        street: 'Lovensdijkstraat 61',
+        street: 'Hogeschoollaan 32',
         city: 'Breda',
         isActive: true,
-        emailAdress: 'j.doe@server.com',
-        password: 'secret',
-        phoneNumber: '06 12425475'  
+        emailAdress: 'jane.doe@server.com',
+        password: 'public',
+        phoneNumber: '06 87654321'  
     },
 ]
 
@@ -155,6 +155,7 @@ app.route('/user/:userId')
         res.end()
     })
 
+// Return a 404 status if the link doesn't exist
 app.all('*', (req, res) => {
     res.status(404).json({
         status: 404,
