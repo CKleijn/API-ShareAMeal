@@ -56,17 +56,37 @@ app.route('/user')
         res.end();
     })
     .post((req, res) => {
-        let user = req.body;
-        id++;
-        user = {
-            id,
-            ...user
+        if(res.statusCode >= 200 && res.statusCode <= 299) {
+            let user = req.body;
+            id++;
+            user = {
+                id,
+                ...user
+            }
+            let isUsed = false;
+            database.forEach(item => {
+                if(item.emailAdress == user.emailAdress) {
+                    isUsed = true;
+                }
+            });
+            if(!isUsed) {
+                database.push(user);
+                res.status(201).json({
+                    status: 201,
+                    result: database
+                });
+            } else {
+                res.status(401).json({
+                    status: 401,
+                    result: 'Email is not unique'
+                });
+            }
+        } else {
+            res.status(401).json({
+                status: 401,
+                result: 'Forbidden'
+            });
         }
-        database.push(user);
-        res.status(201).json({
-            status: 201,
-            result: database
-        });
         res.end();
     });
 
@@ -98,7 +118,7 @@ app.route('/user/:userId')
             } else {
                 res.status(401).json({
                     status: 401,
-                    result: 'Forbidden'
+                    result: 'None of the users got this id'
                 });
             }
         } else {
@@ -120,15 +140,28 @@ app.route('/user/:userId')
                     id,
                     ...updatedUser
                 }
-                database[userId] = updatedUser;
-                res.status(201).json({
-                    status: 201,
-                    result: database
+                let isUsed = false;
+                database.forEach(item => {
+                    if(item.emailAdress == updatedUser.emailAdress) {
+                        isUsed = true;
+                    }
                 });
+                if(!isUsed) {
+                    database[userId] = updatedUser;
+                    res.status(201).json({
+                        status: 201,
+                        result: database
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 401,
+                        result: 'Email is not unique'
+                    });
+                }
             } else {
                 res.status(401).json({
                     status: 401,
-                    result: 'Forbidden'
+                    result: 'None of the users got this id'
                 });
             }
         } else {
@@ -152,7 +185,7 @@ app.route('/user/:userId')
             } else {
                 res.status(401).json({
                     status: 401,
-                    result: 'Forbidden'
+                    result: 'None of the users got this id'
                 });
             }
         } else {
