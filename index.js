@@ -72,18 +72,10 @@ app.route('/user')
 
 app.get('/user/profile', (req, res) => {
     if(res.statusCode >= 200 && res.statusCode <= 299) {
-        let user = database.filter((item) => item.id == 0);
-        if(user.length > 0) {
-            res.status(200).json({
-                status: 200,
-                result: user
-            });
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
-            });
-        }
+        res.status(200).json({
+            status: 200,
+            result: 'End-point not realised yet'
+        });
     } else {
         res.status(401).json({
             status: 401,
