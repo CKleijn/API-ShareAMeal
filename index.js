@@ -39,8 +39,9 @@ let database =
 
 let id = 1;
 
-// All user routes
+// All /user routes
 app.route('/user')
+    // Get all users
     .get((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             res.status(200).json({
@@ -55,14 +56,10 @@ app.route('/user')
         }
         res.end();
     })
+    // Create an user
     .post((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             let user = req.body;
-            id++;
-            user = {
-                id,
-                ...user
-            }
             let isUsed = false;
             database.forEach(item => {
                 if(item.emailAdress == user.emailAdress) {
@@ -70,15 +67,20 @@ app.route('/user')
                 }
             });
             if(!isUsed) {
+                id++;
+                user = {
+                    id,
+                    ...user
+                }
                 database.push(user);
                 res.status(201).json({
                     status: 201,
                     result: database
                 });
             } else {
-                res.status(401).json({
-                    status: 401,
-                    result: 'Email is not unique'
+                res.status(409).json({
+                    status: 409,
+                    result: user.emailAdress + ' is not unique'
                 });
             }
         } else {
@@ -90,6 +92,7 @@ app.route('/user')
         res.end();
     });
 
+// Get user profile
 app.get('/user/profile', (req, res) => {
     if(res.statusCode >= 200 && res.statusCode <= 299) {
         res.status(200).json({
@@ -105,7 +108,9 @@ app.get('/user/profile', (req, res) => {
     res.end();
 });
 
-app.route('/user/:userId')
+// All /user/:userId routes (userId can only be an integer)
+app.route('/user/:userId(\\d+)')
+    // Get specific user on userId
     .get((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             const userId = req.params.userId;
@@ -116,9 +121,9 @@ app.route('/user/:userId')
                     result: user
                 });
             } else {
-                res.status(401).json({
-                    status: 401,
-                    result: 'None of the users got this id'
+                res.status(404).json({
+                    status: 404,
+                    result: 'None of the users got an id of ' + userId
                 });
             }
         } else {
@@ -129,6 +134,7 @@ app.route('/user/:userId')
         }
         res.end();
     })
+    // Update specific user on userId
     .put((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             const userId = req.params.userId
@@ -136,10 +142,6 @@ app.route('/user/:userId')
             let id = parseInt(userId);
             if(user.length > 0) {
                 let updatedUser = req.body;
-                updatedUser = {
-                    id,
-                    ...updatedUser
-                }
                 let isUsed = false;
                 database.forEach(item => {
                     if(item.emailAdress == updatedUser.emailAdress) {
@@ -147,21 +149,25 @@ app.route('/user/:userId')
                     }
                 });
                 if(!isUsed) {
+                    updatedUser = {
+                        id,
+                        ...updatedUser
+                    }
                     database[userId] = updatedUser;
                     res.status(201).json({
                         status: 201,
                         result: database
                     });
                 } else {
-                    res.status(401).json({
-                        status: 401,
-                        result: 'Email is not unique'
+                    res.status(409).json({
+                        status: 409,
+                        result: updatedUser.emailAdress + ' is not unique'
                     });
                 }
             } else {
-                res.status(401).json({
-                    status: 401,
-                    result: 'None of the users got this id'
+                res.status(404).json({
+                    status: 404,
+                    result: 'None of the users got an id of ' + userId
                 });
             }
         } else {
@@ -172,6 +178,7 @@ app.route('/user/:userId')
         }
         res.end();
     })
+    // Delete specific user on userId
     .delete((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             const userId = req.params.userId;
@@ -183,9 +190,9 @@ app.route('/user/:userId')
                     result: database
                 });
             } else {
-                res.status(401).json({
-                    status: 401,
-                    result: 'None of the users got this id'
+                res.status(404).json({
+                    status: 404,
+                    result: 'None of the users got an id of ' + userId
                 });
             }
         } else {
