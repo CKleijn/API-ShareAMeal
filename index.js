@@ -40,7 +40,7 @@ let database =
 let id = 2;
 
 // All /user routes
-app.route('/user')
+app.route('/api/user')
     // Get all users
     .get((req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
@@ -93,7 +93,7 @@ app.route('/user')
     });
 
 // Get user profile
-app.get('/user/profile', (req, res) => {
+app.get('/api/user/profile', (req, res) => {
     if(res.statusCode >= 200 && res.statusCode <= 299) {
         res.status(200).json({
             status: 200,
@@ -109,7 +109,7 @@ app.get('/user/profile', (req, res) => {
 });
 
 // All /user/:userId routes
-app.route('/user/:userId')
+app.route('/api/user/:userId')
     // Get specific user on userId
     .get((req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
