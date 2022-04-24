@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 let database = 
 [
     { 
-        id: 0,
+        id: 1,
         firstName: 'John',
         lastName: 'Doe',
         street: 'Lovensdijkstraat 61',
@@ -23,7 +23,7 @@ let database =
         phoneNumber: '06 12425475'  
     },
     { 
-        id: 1,
+        id: 2,
         firstName: 'Jane',
         lastName: 'Doe',
         street: 'Hogeschoollaan 32',
@@ -37,7 +37,7 @@ let database =
     return x.id - y.id
 });
 
-let id = 1;
+let id = 2;
 
 // All /user routes
 app.route('/user')
@@ -108,12 +108,15 @@ app.get('/user/profile', (req, res) => {
     res.end();
 });
 
-// All /user/:userId routes (userId can only be an integer)
-app.route('/user/:userId(\\d+)')
+// All /user/:userId routes
+app.route('/user/:userId')
     // Get specific user on userId
-    .get((req, res) => {
+    .get((req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             const userId = req.params.userId;
+            if (isNaN(userId)) {
+                next();
+            }
             let user = database.filter((item) => item.id == userId);
             if(user.length > 0) {
                 res.status(200).json({
@@ -135,9 +138,12 @@ app.route('/user/:userId(\\d+)')
         res.end();
     })
     // Update specific user on userId
-    .put((req, res) => {
+    .put((req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
-            const userId = req.params.userId
+            const userId = req.params.userId;
+            if (isNaN(userId)) {
+                next();
+            }
             let user = database.filter((item) => item.id == userId);
             let id = parseInt(userId);
             if(user.length > 0) {
@@ -153,7 +159,7 @@ app.route('/user/:userId(\\d+)')
                         id,
                         ...updatedUser
                     }
-                    database[userId] = updatedUser;
+                    database[database.findIndex((item) => item.id == userId)] = updatedUser;
                     res.status(201).json({
                         status: 201,
                         result: database
@@ -179,12 +185,15 @@ app.route('/user/:userId(\\d+)')
         res.end();
     })
     // Delete specific user on userId
-    .delete((req, res) => {
+    .delete((req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             const userId = req.params.userId;
+            if (isNaN(userId)) {
+                next();
+            }
             let user = database.filter((item) => item.id == userId);
             if(user.length > 0) {
-                database.splice(userId, 1);
+                database = database.filter((item) => item.id != userId);
                 res.status(201).json({
                     status: 201,
                     result: database
