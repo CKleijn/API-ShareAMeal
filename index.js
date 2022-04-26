@@ -21,6 +21,11 @@ app.all('*', (req, res) => {
     res.end();
 });
 
+// Error handler
+app.use((err, req, res, next) => {
+    res.status(err.status).json(err);
+});
+
 // Show which port is set available for the app
 app.listen(port, () => {
     console.log('App listening on localhost:' + port)

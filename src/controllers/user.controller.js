@@ -1,3 +1,6 @@
+// Default settings
+const assert = require('assert');
+
 // Create a database array and sort it on id
 let database = 
 [
@@ -30,6 +33,27 @@ let database =
 let id = 2;
 
 let userController = {
+    validateUser: (req, res, next) => {
+        let user = req.body;
+        let { firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber } = user;
+        try {
+            assert(typeof firstName === 'string', 'firstName must be a string!');
+            assert(typeof lastName === 'string', 'lastName must be a string!');
+            assert(typeof street === 'string', 'street must be a string!');
+            assert(typeof city === 'string', 'city must be a string!');
+            assert(typeof isActive === 'boolean', 'isActive must be a boolean!');
+            assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(typeof password === 'string', 'password must be a string!');
+            assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+            next();
+        } catch (err) {
+            const error = {
+                status: 400,
+                result: err.message
+            };
+            next(error);
+        }
+    },
     getAllUsers: (req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             res.status(200).json({
