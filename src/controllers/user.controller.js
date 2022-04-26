@@ -32,6 +32,7 @@ let database =
 
 let id = 2;
 
+// Create an UserController
 let userController = {
     validateUser: (req, res, next) => {
         let user = req.body;
