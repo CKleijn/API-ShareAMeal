@@ -8,7 +8,7 @@ router.route('/api/user')
     // Get all users
     .get(userController.getAllUsers)
     // Create an user
-    .post(userController.validateUser, userController.addUser);
+    .post(userController.validateCreatedUser, userController.addUser);
 
 // Get user profile
 router.get('/api/user/profile', userController.getUserProfile);
@@ -18,7 +18,7 @@ router.route('/api/user/:userId')
     // Get specific user on userId
     .get(userController.getUserById)
     // Update specific user on userId
-    .put(userController.validateUser, userController.updateUserById)
+    .put(userController.updateUserById)
     // Delete specific user on userId
     .delete(userController.deleteUserById);
 
