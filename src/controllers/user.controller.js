@@ -12,7 +12,7 @@ let database =
         city: 'Breda',
         isActive: true,
         emailAdress: 'john.doe@server.com',
-        password: 'secret',
+        password: 'pAssw0rd',
         phoneNumber: '06 12425475'  
     },
     { 
@@ -23,7 +23,7 @@ let database =
         city: 'Breda',
         isActive: true,
         emailAdress: 'jane.doe@server.com',
-        password: 'public',
+        password: 'paSsw0rd',
         phoneNumber: '06 87654321'  
     },
 ].sort(function (x, y) {
@@ -34,17 +34,22 @@ let id = 2;
 
 // Create an UserController
 let userController = {
-    validateUser: (req, res, next) => {
+    validateCreatedUser: (req, res, next) => {
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         let user = req.body;
         let { firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber } = user;
         try {
+            assert((database.filter((item) => item.emailAdress == req.body.emailAdress).length === 0), 'User already exists!');
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             assert(typeof isActive === 'boolean', 'isActive must be a boolean!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
+            assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
             next();
         } catch (err) {
@@ -72,29 +77,16 @@ let userController = {
     addUser: (req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             let user = req.body;
-            let isUsed = false;
-            database.forEach(item => {
-                if(item.emailAdress == user.emailAdress) {
-                    isUsed = true;
-                }
-            });
-            if(!isUsed) {
-                id++;
-                user = {
-                    id,
-                    ...user
-                }
-                database.push(user);
-                res.status(201).json({
-                    status: 201,
-                    result: database
-                });
-            } else {
-                res.status(409).json({
-                    status: 409,
-                    result: user.emailAdress + ' is not unique'
-                });
+            id++;
+            user = {
+                id,
+                ...user
             }
+            database.push(user);
+            res.status(201).json({
+                status: 201,
+                result: user
+            });
         } else {
             res.status(401).json({
                 status: 401,
