@@ -1,36 +1,6 @@
 // Default settings
 const assert = require('assert');
-
-// Create a database array and sort it on id
-let database = 
-[
-    { 
-        id: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        street: 'Lovensdijkstraat 61',
-        city: 'Breda',
-        isActive: true,
-        emailAdress: 'john.doe@server.com',
-        password: 'pAssw0rd',
-        phoneNumber: '06 12425475'  
-    },
-    { 
-        id: 2,
-        firstName: 'Jane',
-        lastName: 'Doe',
-        street: 'Hogeschoollaan 32',
-        city: 'Breda',
-        isActive: true,
-        emailAdress: 'jane.doe@server.com',
-        password: 'paSsw0rd',
-        phoneNumber: '06 87654321'  
-    },
-].sort(function (x, y) {
-    return x.id - y.id
-});
-
-let id = 2;
+const dbconnection = require('../../database/dbconnection');
 
 // Create an UserController
 let userController = {
@@ -38,19 +8,17 @@ let userController = {
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         let user = req.body;
-        let { firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber } = user;
+        let { firstName, lastName, emailAdress, password, phoneNumber, street, city } = user;
         try {
-            assert((database.filter((item) => item.emailAdress == req.body.emailAdress).length === 0), 'User already exists!');
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
-            assert(typeof street === 'string', 'street must be a string!');
-            assert(typeof city === 'string', 'city must be a string!');
-            assert(typeof isActive === 'boolean', 'isActive must be a boolean!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
             assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
             assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+            assert(typeof street === 'string', 'street must be a string!');
+            assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
             const error = {
@@ -61,39 +29,59 @@ let userController = {
         }
     },
     getAllUsers: (req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
-            res.status(200).json({
-                status: 200,
-                result: database
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+           
+            connection.query('SELECT * FROM user', function (error, results, fields) {
+                connection.release();
+            
+                if (error) throw error;
+
+                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                    res.status(200).json({
+                        status: 200,
+                        result: results
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 401,
+                        result: 'Forbidden'
+                    });
+                }
+                res.end();
             });
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
-            });
-        }
-        res.end();
+        });
     },
     addUser: (req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+
             let user = req.body;
-            id++;
-            user = {
-                id,
-                ...user
-            }
-            database.push(user);
-            res.status(201).json({
-                status: 201,
-                result: user
-            });
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
-            });
-        }
-        res.end();
+                user = {
+                    ...user
+                }
+            
+                connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], 
+                                function (error, results, fields) {
+                    connection.release();
+
+                    if (error) throw error;
+
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(201).json({
+                            status: 201,
+                            result: results
+                        });
+                    } else {
+                        res.status(401).json({
+                            status: 401,
+                            result: 'Forbidden'
+                        });
+                    }
+                });
+            res.end();
+        });
     },
     getUserProfile: (req, res) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
@@ -109,113 +97,102 @@ let userController = {
         }
         res.end();
     },
-    getUserById: (req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
+    getUserById: (req, res, next) => {
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+           
             const userId = req.params.userId;
+
             if (isNaN(userId)) {
-                res.status(404).json({
-                    status: 404,
-                    result: 'End-point not found'
-                });
+                return next();
             }
-            let user = database.filter((item) => item.id == userId);
-            if(user.length > 0) {
-                res.status(200).json({
-                    status: 200,
-                    result: user
-                });
-            } else {
-                res.status(404).json({
-                    status: 404,
-                    result: 'None of the users got an id of ' + userId
-                });
-            }
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
-            });
-        }
-        res.end();
-    },
-    updateUserById: (req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
-            const userId = req.params.userId;
-            if (isNaN(userId)) {
-                res.status(404).json({
-                    status: 404,
-                    result: 'End-point not found'
-                });
-            }
-            let user = database.filter((item) => item.id == userId);
-            let id = parseInt(userId);
-            if(user.length > 0) {
-                let updatedUser = req.body;
-                let isUsed = false;
-                database.forEach(item => {
-                    if(item.emailAdress == updatedUser.emailAdress) {
-                        isUsed = true;
-                    }
-                });
-                if(!isUsed) {
-                    updatedUser = {
-                        id,
-                        ...updatedUser
-                    }
-                    database[database.findIndex((item) => item.id == userId)] = updatedUser;
-                    res.status(201).json({
-                        status: 201,
-                        result: database
+
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
+                connection.release();
+            
+                if (error) throw error;
+
+                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                    res.status(200).json({
+                        status: 200,
+                        result: results
                     });
                 } else {
-                    res.status(409).json({
-                        status: 409,
-                        result: updatedUser.emailAdress + ' is not unique'
+                    res.status(401).json({
+                        status: 401,
+                        result: 'Forbidden'
                     });
                 }
-            } else {
-                res.status(404).json({
-                    status: 404,
-                    result: 'None of the users got an id of ' + userId
-                });
-            }
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
+                res.end();
             });
-        }
-        res.end();
+        });
     },
-    deleteUserById: (req, res) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
+    updateUserById: (req, res, next) => {
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+
             const userId = req.params.userId;
+
             if (isNaN(userId)) {
-                res.status(404).json({
-                    status: 404,
-                    result: 'End-point not found'
-                });
+                return next();
             }
-            let user = database.filter((item) => item.id == userId);
-            if(user.length > 0) {
-                database = database.filter((item) => item.id != userId);
-                res.status(201).json({
-                    status: 201,
-                    result: database
-                });
-            } else {
-                res.status(404).json({
-                    status: 404,
-                    result: 'None of the users got an id of ' + userId
-                });
-            }
-        } else {
-            res.status(401).json({
-                status: 401,
-                result: 'Forbidden'
+
+            let updatedUser = req.body;
+                updatedUser = {
+                    ...updatedUser
+                }
+           
+            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
+                            [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
+                            function (error, results, fields) {
+                connection.release();
+            
+                if (error) throw error;
+
+                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                    res.status(201).json({
+                        status: 201,
+                        result: results
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 401,
+                        result: 'Forbidden'
+                    });
+                }
+                res.end();
             });
-        }
-        res.end();
+        });
+    },
+    deleteUserById: (req, res, next) => {
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+
+            const userId = req.params.userId;
+
+            if (isNaN(userId)) {
+                return next();
+            }
+           
+            connection.query('DELETE FROM user WHERE id = ?', userId, function (error, results, fields) {
+                connection.release();
+            
+                if (error) throw error;
+
+                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                    res.status(201).json({
+                        status: 201,
+                        result: results
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 401,
+                        result: 'Forbidden'
+                    });
+                }
+                res.end();
+            });
+        });
     }
 };
 
