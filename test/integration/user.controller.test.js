@@ -222,12 +222,12 @@ describe('UC-204 Details of user', () => {
     // });
     it('TC-204-2 User-ID doesnt exist', (done) => {
         chai.request(server)
-            .get('/api/user/10')
+            .get('/api/user/0')
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status, message } = res.body;
                 status.should.equals(401);
-                message.should.be.a('string').that.equals('User does not exist with the id of 10');
+                message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });
     });
