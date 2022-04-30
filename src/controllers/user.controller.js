@@ -23,7 +23,7 @@ let userController = {
         } catch (err) {
             return next({
                 status: 400,
-                result: err.message
+                message: err.message
             });
         }
     },
@@ -86,7 +86,7 @@ let userController = {
                 } else {
                     return next({
                         status: 409,
-                        message: 'User already exist'
+                        message: 'User already exist!'
                     });
                 }
             });
@@ -189,7 +189,7 @@ let userController = {
                         } else {
                             return next({
                                 status: 409,
-                                message: 'User already exist'
+                                message: 'User already exist!'
                             });
                         }
                     });
