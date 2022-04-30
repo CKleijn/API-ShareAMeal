@@ -7,6 +7,8 @@ const server = require('../../index');
 chai.should();
 chai.use(chaiHttp);
 
+let createdUserId;
+
 // Create the tests
 describe('UC-201 Register as new user', () => {
     it('TC-201-1 Required input is missing', (done) => {
@@ -109,12 +111,13 @@ describe('UC-201 Register as new user', () => {
                 res.should.be.an('object');
                 let { status } = res.body;
                 status.should.equals(201);
+                createdUserId = res.body.result.insertId;
                 done();
             });
     });
 });
 
-describe('UC-202 Overview of users', () => {
+// describe('UC-202 Overview of users', () => {
     // it('TC-202-1 Show zero users', (done) => {
     //     chai.request(server)
     //         .get('/api/user')
@@ -179,7 +182,7 @@ describe('UC-202 Overview of users', () => {
     //             done();
     //         });
     // });
-});
+// });
 
 // describe('UC-203 User profile request', () => {
 //     it('TC-203-1 Invalid token', (done) => {
@@ -217,20 +220,20 @@ describe('UC-204 Details of user', () => {
     //             done();
     //         });
     // });
-    it('TC-204-2 User-ID dont exist', (done) => {
+    it('TC-204-2 User-ID doesnt exist', (done) => {
         chai.request(server)
-            .get('/api/user/0')
+            .get('/api/user/10')
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status, result } = res.body;
+                let { status, message } = res.body;
                 status.should.equals(401);
-                result.should.be.a('string').that.equals('User does not exist with the id of 0');
+                message.should.be.a('string').that.equals('User does not exist with the id of 10');
                 done();
             });
     });
     it('TC-204-3 User-ID exist', (done) => {
         chai.request(server)
-            .get('/api/user/1')
+            .get('/api/user/' + createdUserId)
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status, result } = res.body;
@@ -255,9 +258,9 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status, result } = res.body;
+                let { status, message } = res.body;
                 status.should.equals(400);
-                result.should.be.a('string').that.equals('firstName must be a string!');
+                message.should.be.a('string').that.equals('firstName must be a string!');
                 done();
             });
     });
@@ -299,15 +302,15 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status, result } = res.body;
+                let { status, message } = res.body;
                 status.should.equals(400);
-                result.should.be.a('string').that.equals('phoneNumber is not valid!');
+                message.should.be.a('string').that.equals('phoneNumber is not valid!');
                 done();
             });
     });
-    it('TC-205-4 User dont exist', (done) => {
+    it('TC-205-4 User doesnt exist', (done) => {
         chai.request(server)
-            // User dont exist
+            // User doesnt exist
             .put('/api/user/0')
             .send({
                 firstName: 'Jaze',
@@ -321,9 +324,9 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status, result } = res.body;
-                status.should.equals(400);
-                result.should.be.a('string').that.equals('User does not exist with the id of 0');
+                let { status, message } = res.body;
+                status.should.equals(401);
+                message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });
     });
@@ -351,17 +354,16 @@ describe('UC-205 Modify user', () => {
     // });
     it('TC-205-6 User has modified successfully', (done) => {
         chai.request(server)
-            .put('/api/user/1')
+            .put('/api/user/' + createdUserId)
             .send({
                 // User is valid
                 firstName: 'Jape',
                 lastName: 'Doe',
                 street: 'Hogeschoollaan 76',
                 city: 'Breda',
-                isActive: true,
-                emailAdress: 'jape.doe@server.com',
+                emailAdress: 'japen.doe@server.com',
                 password: 'Passw0rd',
-                phoneNumber: '06 43643761'  
+                phoneNumber: '06 12425495'  
             })
             .end((req, res) => {
                 res.should.be.an('object');
@@ -373,14 +375,14 @@ describe('UC-205 Modify user', () => {
 });
 
 describe('UC-206 Delete user', () => {
-    it('TC-206-1 User does not exist', (done) => {
+    it('TC-206-1 User doesnt exist', (done) => {
         chai.request(server)
-            .delete('/api/user/1')
+            .delete('/api/user/0')
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status, result } = res.body;
-                status.should.equals(404);
-                result.should.be.a('string').that.equals('User does not exist with the id of 1');
+                let { status, message } = res.body;
+                status.should.equals(401);
+                message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });
     });
@@ -408,7 +410,7 @@ describe('UC-206 Delete user', () => {
     // });
     it('TC-206-4 User has been deleted successfully', (done) => {
         chai.request(server)
-            .delete('/api/user/1')
+            .delete('/api/user/' + createdUserId)
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
