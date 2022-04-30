@@ -21,14 +21,13 @@ let userController = {
             assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
-            const error = {
+            return next({
                 status: 400,
                 result: err.message
-            };
-            next(error);
+            });
         }
     },
-    getAllUsers: (req, res) => {
+    getAllUsers: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
            
@@ -42,17 +41,17 @@ let userController = {
                         status: 200,
                         result: results
                     });
+                    res.end();
                 } else {
-                    res.status(401).json({
+                    return next({
                         status: 401,
-                        result: 'Forbidden'
+                        message: 'Forbidden'
                     });
                 }
-                res.end();
             });
         });
     },
-    addUser: (req, res) => {
+    addUser: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
 
@@ -60,42 +59,52 @@ let userController = {
                 user = {
                     ...user
                 }
-            
-                connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], 
-                                function (error, results, fields) {
-                    connection.release();
+                
+            connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (error, results, fields) {
+                if (error) throw error;
 
-                    if (error) throw error;
+                if(results[0].count === 0) {
+                    connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (error, results, fields) {
+                        connection.release();
 
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        res.status(201).json({
-                            status: 201,
-                            result: results
-                        });
-                    } else {
-                        res.status(401).json({
-                            status: 401,
-                            result: 'Forbidden'
-                        });
-                    }
-                });
-            res.end();
+                        if (error) throw error;
+
+                        if(res.statusCode >= 200 && res.statusCode <= 299) {
+                            res.status(201).json({
+                                status: 201,
+                                result: results
+                            });
+                            res.end();
+                        } else {
+                            return next({
+                                status: 401,
+                                message: 'Forbidden'
+                            });
+                        }
+                    });
+                } else {
+                    return next({
+                        status: 409,
+                        message: 'User already exist'
+                    });
+                }
+            });
         });
     },
-    getUserProfile: (req, res) => {
+    getUserProfile: (req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
             res.status(200).json({
                 status: 200,
                 result: 'End-point not realised yet'
             });
+            res.end();
         } else {
-            res.status(401).json({
+            return next({
                 status: 401,
-                result: 'Forbidden'
+                message: 'Forbidden'
             });
         }
-        res.end();
     },
     getUserById: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
@@ -112,18 +121,25 @@ let userController = {
             
                 if (error) throw error;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    res.status(200).json({
-                        status: 200,
-                        result: results
-                    });
+                if(results.length > 0) {
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
                 } else {
-                    res.status(401).json({
+                    return next({
                         status: 401,
-                        result: 'Forbidden'
+                        message: 'User does not exist with the id of ' + userId
                     });
                 }
-                res.end();
             });
         });
     },
@@ -141,26 +157,48 @@ let userController = {
                 updatedUser = {
                     ...updatedUser
                 }
-           
-            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
-                            [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
-                            function (error, results, fields) {
-                connection.release();
-            
+
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
                 if (error) throw error;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    res.status(201).json({
-                        status: 201,
-                        result: results
+                if(results.length > 0) {
+                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (error, results, fields) {
+                        if (error) throw error;
+        
+                        if(results[0].count === 0) {
+                            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
+                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
+                                    function (error, results, fields) {
+                                connection.release();
+        
+                                if (error) throw error;
+        
+                                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                                    res.status(201).json({
+                                        status: 201,
+                                        result: results
+                                    });
+                                    res.end();
+                                } else {
+                                    return next({
+                                        status: 401,
+                                        message: 'Forbidden'
+                                    });
+                                }
+                            });
+                        } else {
+                            return next({
+                                status: 409,
+                                message: 'User already exist'
+                            });
+                        }
                     });
                 } else {
-                    res.status(401).json({
+                    return next({
                         status: 401,
-                        result: 'Forbidden'
+                        message: 'User does not exist with the id of ' + userId
                     });
                 }
-                res.end();
             });
         });
     },
@@ -173,24 +211,35 @@ let userController = {
             if (isNaN(userId)) {
                 return next();
             }
-           
-            connection.query('DELETE FROM user WHERE id = ?', userId, function (error, results, fields) {
-                connection.release();
-            
+
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
                 if (error) throw error;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    res.status(201).json({
-                        status: 201,
-                        result: results
+                if(results.length > 0) {
+                    connection.query('DELETE FROM user WHERE id = ?', userId, function (error, results, fields) {
+                        connection.release();
+                    
+                        if (error) throw error;
+        
+                        if(res.statusCode >= 200 && res.statusCode <= 299) {
+                            res.status(201).json({
+                                status: 201,
+                                result: results
+                            });
+                            res.end();
+                        } else {
+                            return next({
+                                status: 401,
+                                message: 'Forbidden'
+                            });
+                        }
                     });
                 } else {
-                    res.status(401).json({
+                    return next({
                         status: 401,
-                        result: 'Forbidden'
+                        message: 'User does not exist with the id of ' + userId
                     });
                 }
-                res.end();
             });
         });
     }
