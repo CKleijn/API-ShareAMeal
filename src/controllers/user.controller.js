@@ -4,9 +4,10 @@ const dbconnection = require('../../database/dbconnection');
 
 // Create an UserController
 let userController = {
-    validateCreatedUser: (req, res, next) => {
+    validateUser: (req, res, next) => {
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        const phoneNumberRegex = /([\d] *){10}/;
         let user = req.body;
         let { firstName, lastName, emailAdress, password, phoneNumber, street, city } = user;
         try {
@@ -17,6 +18,7 @@ let userController = {
             assert(typeof password === 'string', 'password must be a string!');
             assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+            assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             next();
