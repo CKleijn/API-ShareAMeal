@@ -5,6 +5,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT;
 const userRouter = require('./src/routes/user.routes');
+const mealRouter = require('./src/routes/meal.routes');
 
 // Use body-parser
 const bodyParser = require('body-parser');
@@ -12,6 +13,8 @@ app.use(bodyParser.json());
 
 // Use user.routes
 app.use(userRouter);
+// Use meal.routes
+app.use(mealRouter);
 
 // Return a 404 status if the link doesn't exist
 app.all('*', (req, res) => {
