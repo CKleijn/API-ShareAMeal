@@ -33,10 +33,10 @@ let userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
            
-            connection.query('SELECT * FROM user', function (error, results, fields) {
+            connection.query('SELECT * FROM user', function (err, results, fields) {
                 connection.release();
             
-                if (error) throw error;
+                if (err) throw err;
 
                 if(res.statusCode >= 200 && res.statusCode <= 299) {
                     res.status(200).json({
@@ -62,21 +62,22 @@ let userController = {
                     ...user
                 }
                 
-            connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results[0].count === 0) {
                     connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (error, results, fields) {
+                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (err, results, fields) {
                         connection.release();
 
-                        if (error) throw error;
+                        if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
                             res.status(201).json({
                                 status: 201,
                                 message: 'User has been created!',
-                                result: user
+                                result: results,
+                                response: user
                             });
                             res.end();
                         } else {
@@ -119,10 +120,10 @@ let userController = {
                 return next();
             }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 connection.release();
             
-                if (error) throw error;
+                if (err) throw err;
 
                 if(results.length > 0) {
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
@@ -161,26 +162,27 @@ let userController = {
                     ...updatedUser
                 }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results.length > 0) {
-                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (error, results, fields) {
-                        if (error) throw error;
+                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
+                        if (err) throw err;
         
                         if(results[0].count === 0) {
                             connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
                                     [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
-                                    function (error, results, fields) {
+                                    function (err, results, fields) {
                                 connection.release();
         
-                                if (error) throw error;
+                                if (err) throw err;
         
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
                                     res.status(201).json({
                                         status: 201,
                                         message: 'User has been updated!',
-                                        result: updatedUser
+                                        results: results,
+                                        response: updatedUser
                                     });
                                     res.end();
                                 } else {
@@ -216,19 +218,20 @@ let userController = {
                 return next();
             }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results.length > 0) {
-                    connection.query('DELETE FROM user WHERE id = ?', userId, function (error, results, fields) {
+                    connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
                         connection.release();
                     
-                        if (error) throw error;
+                        if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
                             res.status(201).json({
                                 status: 201,
-                                message: 'User has been removed!'
+                                message: 'User has been removed!',
+                                results: results
                             });
                             res.end();
                         } else {
