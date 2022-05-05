@@ -73,12 +73,7 @@ let userController = {
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).json({
-                                status: 201,
-                                message: 'User has been created!',
-                                result: results,
-                                response: user
-                            });
+                            res.status(201).redirect('/api/user/' + results.insertId);
                             res.end();
                         } else {
                             return next({
@@ -178,12 +173,7 @@ let userController = {
                                 if (err) throw err;
         
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
-                                    res.status(201).json({
-                                        status: 201,
-                                        message: 'User has been updated!',
-                                        results: results,
-                                        response: updatedUser
-                                    });
+                                    res.status(201).redirect('/api/user/' + userId);
                                     res.end();
                                 } else {
                                     return next({
@@ -228,11 +218,7 @@ let userController = {
                         if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).json({
-                                status: 201,
-                                message: 'User has been removed!',
-                                results: results
-                            });
+                            res.status(201).redirect('/api/user');
                             res.end();
                         } else {
                             return next({
