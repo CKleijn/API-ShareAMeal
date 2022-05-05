@@ -32,25 +32,108 @@ let userController = {
     getAllUsers: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-           
-            connection.query('SELECT * FROM user', function (err, results, fields) {
-                connection.release();
-            
-                if (err) throw err;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    res.status(200).json({
-                        status: 200,
-                        result: results
-                    });
-                    res.end();
-                } else {
-                    return next({
-                        status: 401,
-                        message: 'Forbidden'
-                    });
+            console.log(req.query)
+
+            if(Object.keys(req.query).length === 0) {
+                connection.query('SELECT * FROM user', function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.limit) {
+                if (isNaN(req.query.limit)) {
+                    return next();
                 }
-            });
+
+                connection.query('SELECT * FROM user LIMIT ?', Number.parseInt(req.query.limit), function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.firstName) {
+                if (typeof req.query.firstName !== 'string') {
+                    return next();
+                }
+
+                connection.query('SELECT * FROM user WHERE firstName = ?', req.query.firstName, function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.isActive) {
+                let isActive;
+
+                if(req.query.isActive === 'true') {
+                    isActive = true;
+                } else if(req.query.isActive === 'false'){
+                    isActive = false;
+                } else {
+                    return next();
+                }
+
+                connection.query('SELECT * FROM user WHERE isActive = ?', isActive, function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else {
+                return next({
+                    status: 400
+                });
+            }
         });
     },
     addUser: (req, res, next) => {
