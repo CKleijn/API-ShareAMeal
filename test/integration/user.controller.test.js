@@ -110,8 +110,8 @@ describe('UC-201 Register as new user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
-                createdUserId = res.body.result.insertId;
+                status.should.equals(200);
+                createdUserId = res.body.result[0].id;
                 done();
             });
     });
@@ -357,18 +357,18 @@ describe('UC-205 Modify user', () => {
             .put('/api/user/' + createdUserId)
             .send({
                 // User is valid
-                firstName: 'Jape',
+                firstName: 'Jale',
                 lastName: 'Doe',
                 street: 'Hogeschoollaan 76',
                 city: 'Breda',
-                emailAdress: 'japen.doe@server.com',
+                emailAdress: 'jale.doe@server.com',
                 password: 'Passw0rd',
                 phoneNumber: '06 12425495'  
             })
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
+                status.should.equals(200);
                 done();
             });
     });
@@ -414,7 +414,7 @@ describe('UC-206 Delete user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
+                status.should.equals(200);
                 done();
             });
     });

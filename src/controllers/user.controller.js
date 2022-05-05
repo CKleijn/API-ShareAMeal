@@ -73,7 +73,7 @@ let userController = {
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).redirect('/api/user/' + results.insertId);
+                            res.status(200).redirect('/api/user/' + results.insertId);
                             res.end();
                         } else {
                             return next({
@@ -173,7 +173,7 @@ let userController = {
                                 if (err) throw err;
         
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
-                                    res.status(201).redirect('/api/user/' + userId);
+                                    res.status(200).redirect('/api/user/' + userId);
                                     res.end();
                                 } else {
                                     return next({
@@ -218,7 +218,7 @@ let userController = {
                         if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).redirect('/api/user');
+                            res.status(200).redirect('/api/user');
                             res.end();
                         } else {
                             return next({
