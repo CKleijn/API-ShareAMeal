@@ -33,8 +33,6 @@ let userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
 
-            console.log(req.query)
-
             if(Object.keys(req.query).length === 0) {
                 connection.query('SELECT * FROM user', function (err, results, fields) {
                     connection.release();
