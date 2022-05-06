@@ -110,79 +110,81 @@ describe('UC-201 Register as new user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
-                createdUserId = res.body.result.insertId;
+                status.should.equals(200);
+                createdUserId = res.body.result[0].id;
                 done();
             });
     });
 });
 
-// describe('UC-202 Overview of users', () => {
-    // it('TC-202-1 Show zero users', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-    // it('TC-202-2 Show two users', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-    // it('TC-202-3 Show users with search term by non-existent name', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .query({firstName: 'Jonas'})
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-    // it('TC-202-4 Show users using the search term in the field isActive = false', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .query({isActive: 'false'})
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-    // it('TC-202-5 Show users using the search term in the field isActive = true', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .query({isActive: 'true'})
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-    // it('TC-202-6 Show users with search term by existing name', (done) => {
-    //     chai.request(server)
-    //         .get('/api/user')
-    //         .query({firstName: 'Jane'})
-    //         .end((req, res) => {
-    //             res.should.be.an('object');
-    //             let { status } = res.body;
-    //             status.should.equals(200);
-    //             done();
-    //         });
-    // });
-// });
+describe('UC-202 Overview of users', () => {
+    it('TC-202-1 Show zero users', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({limit: 0})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+    it('TC-202-2 Show two users', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({limit: 2})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+    it('TC-202-3 Show users with search term by non-existent name', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({firstName: 'Jonas'})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+    it('TC-202-4 Show users using the search term in the field isActive = false', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({isActive: 'false'})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+    it('TC-202-5 Show users using the search term in the field isActive = true', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({isActive: 'true'})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+    it('TC-202-6 Show users with search term by existing name', (done) => {
+        chai.request(server)
+            .get('/api/user')
+            .query({firstName: 'Jake'})
+            .end((req, res) => {
+                res.should.be.an('object');
+                let { status } = res.body;
+                status.should.equals(200);
+                done();
+            });
+    });
+});
 
 // describe('UC-203 User profile request', () => {
 //     it('TC-203-1 Invalid token', (done) => {
@@ -357,18 +359,18 @@ describe('UC-205 Modify user', () => {
             .put('/api/user/' + createdUserId)
             .send({
                 // User is valid
-                firstName: 'Jape',
+                firstName: 'Jale',
                 lastName: 'Doe',
                 street: 'Hogeschoollaan 76',
                 city: 'Breda',
-                emailAdress: 'japen.doe@server.com',
+                emailAdress: 'jale.doe@server.com',
                 password: 'Passw0rd',
                 phoneNumber: '06 12425495'  
             })
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
+                status.should.equals(200);
                 done();
             });
     });
@@ -414,7 +416,7 @@ describe('UC-206 Delete user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status } = res.body;
-                status.should.equals(201);
+                status.should.equals(200);
                 done();
             });
     });

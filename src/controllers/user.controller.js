@@ -32,25 +32,106 @@ let userController = {
     getAllUsers: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-           
-            connection.query('SELECT * FROM user', function (error, results, fields) {
-                connection.release();
-            
-                if (error) throw error;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    res.status(200).json({
-                        status: 200,
-                        result: results
-                    });
-                    res.end();
-                } else {
-                    return next({
-                        status: 401,
-                        message: 'Forbidden'
-                    });
+            if(Object.keys(req.query).length === 0) {
+                connection.query('SELECT * FROM user', function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.limit) {
+                if (isNaN(req.query.limit)) {
+                    return next();
                 }
-            });
+
+                connection.query('SELECT * FROM user LIMIT ?', Number.parseInt(req.query.limit), function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.firstName) {
+                if (typeof req.query.firstName !== 'string') {
+                    return next();
+                }
+
+                connection.query('SELECT * FROM user WHERE firstName = ?', req.query.firstName, function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else if(req.query.isActive) {
+                let isActive;
+
+                if(req.query.isActive === 'true') {
+                    isActive = true;
+                } else if(req.query.isActive === 'false'){
+                    isActive = false;
+                } else {
+                    return next();
+                }
+
+                connection.query('SELECT * FROM user WHERE isActive = ?', isActive, function (err, results, fields) {
+                    connection.release();
+                
+                    if (err) throw err;
+    
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        res.status(200).json({
+                            status: 200,
+                            result: results
+                        });
+                        res.end();
+                    } else {
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                });
+            } else {
+                return next({
+                    status: 400
+                });
+            }
         });
     },
     addUser: (req, res, next) => {
@@ -62,22 +143,18 @@ let userController = {
                     ...user
                 }
                 
-            connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results[0].count === 0) {
                     connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (error, results, fields) {
+                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (err, results, fields) {
                         connection.release();
 
-                        if (error) throw error;
+                        if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).json({
-                                status: 201,
-                                message: 'User has been created!',
-                                result: user
-                            });
+                            res.status(200).redirect('/api/user/' + results.insertId);
                             res.end();
                         } else {
                             return next({
@@ -119,10 +196,10 @@ let userController = {
                 return next();
             }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 connection.release();
             
-                if (error) throw error;
+                if (err) throw err;
 
                 if(results.length > 0) {
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
@@ -161,27 +238,23 @@ let userController = {
                     ...updatedUser
                 }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results.length > 0) {
-                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (error, results, fields) {
-                        if (error) throw error;
+                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
+                        if (err) throw err;
         
                         if(results[0].count === 0) {
                             connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
                                     [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
-                                    function (error, results, fields) {
+                                    function (err, results, fields) {
                                 connection.release();
         
-                                if (error) throw error;
+                                if (err) throw err;
         
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
-                                    res.status(201).json({
-                                        status: 201,
-                                        message: 'User has been updated!',
-                                        result: updatedUser
-                                    });
+                                    res.status(200).redirect('/api/user/' + userId);
                                     res.end();
                                 } else {
                                     return next({
@@ -216,20 +289,17 @@ let userController = {
                 return next();
             }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (error, results, fields) {
-                if (error) throw error;
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                if (err) throw err;
 
                 if(results.length > 0) {
-                    connection.query('DELETE FROM user WHERE id = ?', userId, function (error, results, fields) {
+                    connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
                         connection.release();
                     
-                        if (error) throw error;
+                        if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(201).json({
-                                status: 201,
-                                message: 'User has been removed!'
-                            });
+                            res.status(200).redirect('/api/user');
                             res.end();
                         } else {
                             return next({
