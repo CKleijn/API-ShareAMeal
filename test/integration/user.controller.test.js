@@ -111,6 +111,7 @@ describe('UC-201 Register as new user', () => {
                 res.should.be.an('object');
                 res.status.should.equals(201);
                 let { status, result } = res.body;
+                console.log(result)
                 status.should.equals(201);
                 createdUserId = result.id
                 done();

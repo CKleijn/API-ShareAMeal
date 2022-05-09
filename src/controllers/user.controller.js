@@ -186,6 +186,12 @@ let userController = {
 
                                 if (err) throw err;
 
+                                if(results[0].isActive == 1) {
+                                    results[0].isActive = true;
+                                } else {
+                                    results[0].isActive = false;
+                                }
+
                                 res.status(201).json({
                                     status: 201,
                                     result: results[0]
