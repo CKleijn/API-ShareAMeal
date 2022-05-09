@@ -4,7 +4,29 @@ const dbconnection = require('../../database/dbconnection');
 
 // Create an UserController
 let userController = {
-    validateUser: (req, res, next) => {
+    validateCreateUser: (req, res, next) => {
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        let user = req.body;
+        let { firstName, lastName, emailAdress, password, street, city } = user;
+        try {
+            assert(typeof firstName === 'string', 'firstName must be a string!');
+            assert(typeof lastName === 'string', 'lastName must be a string!');
+            assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
+            assert(typeof password === 'string', 'password must be a string!');
+            assert(password.match(passwordRegex), 'password is not valid!');
+            assert(typeof street === 'string', 'street must be a string!');
+            assert(typeof city === 'string', 'city must be a string!');
+            next();
+        } catch (err) {
+            return next({
+                status: 400,
+                message: err.message
+            });
+        }
+    },
+    validateUpdateUser: (req, res, next) => {
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         const phoneNumberRegex = /([\d] *){10}/;
@@ -147,8 +169,8 @@ let userController = {
                 if (err) throw err;
 
                 if(results[0].count === 0) {
-                    connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, phoneNumber, street, city) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, user.password, user.phoneNumber, user.street, user.city], function (err, results, fields) {
+                    connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city) VALUES (?, ?, ?, ?, ?, ?)', 
+                                [user.firstName, user.lastName, user.emailAdress, user.password, user.street, user.city], function (err, results, fields) {
                         connection.release();
 
                         if (err) throw err;

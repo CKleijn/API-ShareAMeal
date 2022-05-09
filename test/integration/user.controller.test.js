@@ -23,8 +23,7 @@ describe('UC-201 Register as new user', () => {
                 street: 'Hogeschoollaan 54',
                 city: 'Breda',
                 emailAdress: 'jake.doe@server.com',
-                password: 'Passw0rd',
-                phoneNumber: '06 43643761'  
+                password: 'Passw0rd'
             })
             .end((req, res) => {
                 res.should.be.an('object');
@@ -86,8 +85,7 @@ describe('UC-201 Register as new user', () => {
                 street: 'Hogeschoollaan 99',
                 city: 'Breda',
                 emailAdress: 'h.tank@server.com',
-                password: 'paSsw00rd',
-                phoneNumber: '06 73282561' 
+                password: 'paSsw00rd'
             })
             .end((req, res) => {
                 res.should.be.an('object');
@@ -107,8 +105,7 @@ describe('UC-201 Register as new user', () => {
                 street: 'Hogeschoollaan 54',
                 city: 'Breda',
                 emailAdress: 'jake.doe@server.com',
-                password: 'Passw0rd',
-                phoneNumber: '06 43643761'  
+                password: 'Passw0rd'
             })
             .end((req, res) => {
                 res.should.be.an('object');
@@ -322,7 +319,6 @@ describe('UC-205 Modify user', () => {
                 lastName: 'Doe',
                 street: 'Hogeschoollaan 45',
                 city: 'Breda',
-                isActive: true,
                 emailAdress: 'jaze.doe@server.com',
                 password: 'paSsw0rd',
                 phoneNumber: '06 87654321' 
