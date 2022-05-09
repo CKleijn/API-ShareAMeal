@@ -316,28 +316,28 @@ describe('UC-205 Modify user', () => {
     //             done();
     //         });
     // });
-    it('TC-205-4 User doesnt exist', (done) => {
-        chai.request(server)
-            // User doesnt exist
-            .put('/api/user/0')
-            .send({
-                firstName: 'Jaze',
-                lastName: 'Doe',
-                street: 'Hogeschoollaan 45',
-                city: 'Breda',
-                emailAdress: 'jaze.doe@server.com',
-                password: 'paSsw0rd',
-                phoneNumber: '06 87654321' 
-            })
-            .end((req, res) => {
-                res.should.be.an('object');
-                res.status.should.equals(400);
-                let { status, message } = res.body;
-                status.should.equals(400);
-                message.should.be.a('string').that.equals('User does not exist with the id of 0');
-                done();
-            });
-    });
+    // it('TC-205-4 User doesnt exist', (done) => {
+    //     chai.request(server)
+    //         // User doesnt exist
+    //         .put('/api/user/0')
+    //         .send({
+    //             firstName: 'Jaze',
+    //             lastName: 'Doe',
+    //             street: 'Hogeschoollaan 45',
+    //             city: 'Breda',
+    //             emailAdress: 'jaze.doe@server.com',
+    //             password: 'paSsw0rd',
+    //             phoneNumber: '06 87654321' 
+    //         })
+    //         .end((req, res) => {
+    //             res.should.be.an('object');
+    //             res.status.should.equals(400);
+    //             let { status, message } = res.body;
+    //             status.should.equals(400);
+    //             message.should.be.a('string').that.equals('User does not exist with the id of 0');
+    //             done();
+    //         });
+    // });
     // it('TC-205-5 Not logged in', (done) => {
     //     chai.request(server)
     //         .put('/api/user/1')
@@ -360,27 +360,27 @@ describe('UC-205 Modify user', () => {
     //             done();
     //         });
     // });
-    it('TC-205-6 User has modified successfully', (done) => {
-        chai.request(server)
-            .put('/api/user/' + createdUserId)
-            .send({
-                // User is valid
-                firstName: 'Jale',
-                lastName: 'Doe',
-                street: 'Hogeschoollaan 76',
-                city: 'Breda',
-                emailAdress: 'jale.doe@server.com',
-                password: 'Passw0rd',
-                phoneNumber: '06 12425495'  
-            })
-            .end((req, res) => {
-                res.should.be.an('object');
-                res.status.should.equals(200);
-                let { status } = res.body;
-                status.should.equals(200);
-                done();
-            });
-    });
+    // it('TC-205-6 User has modified successfully', (done) => {
+    //     chai.request(server)
+    //         .put('/api/user/' + createdUserId)
+    //         .send({
+    //             // User is valid
+    //             firstName: 'Jale',
+    //             lastName: 'Doe',
+    //             street: 'Hogeschoollaan 76',
+    //             city: 'Breda',
+    //             emailAdress: 'jale.doe@server.com',
+    //             password: 'Passw0rd',
+    //             phoneNumber: '06 12425495'  
+    //         })
+    //         .end((req, res) => {
+    //             res.should.be.an('object');
+    //             res.status.should.equals(200);
+    //             let { status } = res.body;
+    //             status.should.equals(200);
+    //             done();
+    //         });
+    // });
 });
 
 describe('UC-206 Delete user', () => {

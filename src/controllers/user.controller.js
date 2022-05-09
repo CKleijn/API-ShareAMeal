@@ -258,63 +258,63 @@ let userController = {
         });
     },
     updateUserById: (req, res, next) => {
-        dbconnection.getConnection(function(err, connection) {
-            if (err) throw err;
+        // dbconnection.getConnection(function(err, connection) {
+        //     if (err) throw err;
 
-            const userId = req.params.userId;
+        //     const userId = req.params.userId;
 
-            if (isNaN(userId)) {
-                return next();
-            }
+        //     if (isNaN(userId)) {
+        //         return next();
+        //     }
 
-            let updatedUser = req.body;
-                updatedUser = {
-                    ...updatedUser
-                }
+        //     let updatedUser = req.body;
+        //         updatedUser = {
+        //             ...updatedUser
+        //         }
 
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
-                if (err) throw err;
+        //     connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+        //         if (err) throw err;
 
-                if(results.length > 0) {
-                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
-                        if (err) throw err;
+        //         if(results.length > 0) {
+        //             connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
+        //                 if (err) throw err;
         
-                        if(results[0].count === 0) {
-                            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
-                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
-                                    function (err, results, fields) {
-                                connection.release();
+        //                 if(results[0].count === 0) {
+        //                     connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
+        //                             [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
+        //                             function (err, results, fields) {
+        //                         connection.release();
         
-                                if (err) throw err;
+        //                         if (err) throw err;
         
-                                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                                    res.status(200).redirect('/api/user/' + userId);
-                                    res.end();
-                                } else {
-                                    res.status(401);
-                                    return next({
-                                        status: 401,
-                                        message: 'Forbidden'
-                                    });
-                                }
-                            });
-                        } else {
-                            res.status(409);
-                            return next({
-                                status: 409,
-                                message: 'User already exist!'
-                            });
-                        }
-                    });
-                } else {
-                    res.status(400);
-                    return next({
-                        status: 400,
-                        message: 'User does not exist with the id of ' + userId
-                    });
-                }
-            });
-        });
+        //                         if(res.statusCode >= 200 && res.statusCode <= 299) {
+        //                             res.status(200).redirect('/api/user/' + userId);
+        //                             res.end();
+        //                         } else {
+        //                             res.status(401);
+        //                             return next({
+        //                                 status: 401,
+        //                                 message: 'Forbidden'
+        //                             });
+        //                         }
+        //                     });
+        //                 } else {
+        //                     res.status(409);
+        //                     return next({
+        //                         status: 409,
+        //                         message: 'User already exist!'
+        //                     });
+        //                 }
+        //             });
+        //         } else {
+        //             res.status(400);
+        //             return next({
+        //                 status: 400,
+        //                 message: 'User does not exist with the id of ' + userId
+        //             });
+        //         }
+        //     });
+        // });
     },
     deleteUserById: (req, res, next) => {
         dbconnection.getConnection(function(err, connection) {
