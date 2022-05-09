@@ -348,15 +348,15 @@ let userController = {
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 if (err) throw err;
 
-                if(results[0].isActive == 1) {
-                    results[0].isActive = true;
-                } else {
-                    results[0].isActive = false;
-                }
-
-                let user = results[0];
-
                 if(results.length > 0) {
+                    if(results[0].isActive == 1) {
+                        results[0].isActive = true;
+                    } else {
+                        results[0].isActive = false;
+                    }
+    
+                    let user = results[0];
+
                     connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
                         connection.release();
                     

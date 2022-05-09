@@ -111,7 +111,6 @@ describe('UC-201 Register as new user', () => {
                 res.should.be.an('object');
                 res.status.should.equals(201);
                 let { status, result } = res.body;
-                console.log(result)
                 status.should.equals(201);
                 createdUserId = result.id
                 done();
@@ -232,7 +231,7 @@ describe('UC-204 Details of user', () => {
                 res.status.should.equals(404);
                 let { status, message } = res.body;
                 status.should.equals(404);
-                message.should.be.a('string').that.equals('User does not exist with the id of 0');
+                message.should.be.a('string').that.equals('User does not exist');
                 done();
             });
     });
@@ -391,7 +390,7 @@ describe('UC-206 Delete user', () => {
                 res.status.should.equals(400);
                 let { status, message } = res.body;
                 status.should.equals(400);
-                message.should.be.a('string').that.equals('User does not exist with the id of 0');
+                message.should.be.a('string').that.equals('User does not exist');
                 done();
             });
     });
