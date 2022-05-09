@@ -90,7 +90,7 @@ describe('UC-201 Register as new user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status, message } = res.body;
-                status.should.equals(400);
+                status.should.equals(409);
                 message.should.be.a('string').that.equals('User already exist!');
                 done();
             });
@@ -235,7 +235,7 @@ describe('UC-204 Details of user', () => {
     });
     it('TC-204-3 User-ID exist', (done) => {
         chai.request(server)
-            .get('/api/user/' + createdUserId)
+            .get('/api/user/1')
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status, result } = res.body;
@@ -382,7 +382,7 @@ describe('UC-206 Delete user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 let { status, message } = res.body;
-                status.should.equals(404);
+                status.should.equals(400);
                 message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });

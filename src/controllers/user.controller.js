@@ -190,7 +190,7 @@ let userController = {
                     });
                 } else {
                     return next({
-                        status: 400,
+                        status: 409,
                         message: 'User already exist!'
                     });
                 }
@@ -290,7 +290,7 @@ let userController = {
                             });
                         } else {
                             return next({
-                                status: 400,
+                                status: 409,
                                 message: 'User already exist!'
                             });
                         }
@@ -335,7 +335,7 @@ let userController = {
                     });
                 } else {
                     return next({
-                        status: 404,
+                        status: 400,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }
