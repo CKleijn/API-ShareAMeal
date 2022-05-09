@@ -182,7 +182,7 @@ let userController = {
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
                             res.status(201).json({
                                 status: 201,
-                                result: results
+                                result: user
                             });
                             res.end();
                         } else {
