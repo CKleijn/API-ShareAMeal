@@ -154,7 +154,7 @@ let userController = {
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(200).redirect('/api/user/' + results.insertId);
+                            res.status(201).redirect('/api/user/' + results.insertId);
                             res.end();
                         } else {
                             return next({
@@ -165,7 +165,7 @@ let userController = {
                     });
                 } else {
                     return next({
-                        status: 409,
+                        status: 400,
                         message: 'User already exist!'
                     });
                 }
@@ -216,7 +216,7 @@ let userController = {
                     }
                 } else {
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }
@@ -265,14 +265,14 @@ let userController = {
                             });
                         } else {
                             return next({
-                                status: 409,
+                                status: 400,
                                 message: 'User already exist!'
                             });
                         }
                     });
                 } else {
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }
@@ -310,7 +310,7 @@ let userController = {
                     });
                 } else {
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }
