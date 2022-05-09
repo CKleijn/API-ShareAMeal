@@ -298,43 +298,16 @@ let userController = {
                     let oldUser = results[0];
                     let updatedUser = req.body;
 
-                    if(updatedUser.firstName) {
-                        oldUser.firstName = updatedUser.firstName
+                    updatedUser = {
+                        ...oldUser,
+                        ...updatedUser
                     }
 
-                    if(updatedUser.lastName) {
-                        oldUser.lastName = updatedUser.lastName
-                    }
-
-                    if(updatedUser.emailAdress) {
-                        oldUser.emailAdress = updatedUser.emailAdress
-                    }
-
-                    if(updatedUser.password) {
-                        oldUser.password = updatedUser.password
-                    }
-
-                    if(updatedUser.phoneNumber) {
-                        oldUser.phoneNumber = updatedUser.phoneNumber
-                    }
-
-                    if(updatedUser.street) {
-                        oldUser.street = updatedUser.street
-                    }
-
-                    if(updatedUser.city) {
-                        oldUser.city = updatedUser.city
-                    }
-
-                    if(oldUser.isActive == 1) {
-                        oldUser.isActive = true;
+                    if(updatedUser.isActive == 1) {
+                        updatedUser.isActive = true;
                     } else {
-                        oldUser.isActive = false;
+                        updatedUser.isActive = false;
                     }
-
-                    updatedUser = oldUser;
-    
-                    let user = updatedUser;
 
                     connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
                         if (err) throw err;
@@ -350,7 +323,7 @@ let userController = {
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
                                     res.status(200).json({
                                         status: 200,
-                                        result: user
+                                        result: updatedUser
                                     });
                                     res.end();
                                 } else {
