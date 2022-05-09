@@ -365,7 +365,7 @@ let userController = {
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
                             res.status(200).json({
                                 status: 200,
-                                result: user
+                                message: 'User has been deleted'
                             });
                             res.end();
                         } else {
