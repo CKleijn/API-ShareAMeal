@@ -180,10 +180,15 @@ let userController = {
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
+                            let id = results.insertId; 
+                            user = {
+                                id,
+                                ...user
+                            }
                             res.status(201).json({
                                 status: 201,
                                 result: user,
-                                userId: results.insertId 
+                                userId: id
                             });
                             res.end();
                         } else {
