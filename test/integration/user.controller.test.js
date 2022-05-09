@@ -1,5 +1,3 @@
-process.env.DB_DATABASE = process.env.DB_DATABASE || 'share-a-meal-testdb';
-
 // Default settings
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -112,9 +110,9 @@ describe('UC-201 Register as new user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 res.status.should.equals(201);
-                let { status, result } = res.body;
+                let { status, result, userId } = res.body;
                 status.should.equals(201);
-                createdUserId = result.insertId
+                createdUserId = userId
                 done();
             });
     });
@@ -239,7 +237,7 @@ describe('UC-204 Details of user', () => {
     });
     it('TC-204-3 User-ID exist', (done) => {
         chai.request(server)
-            .get('/api/user/1')
+            .get('/api/user/' + createdUserId)
             .end((req, res) => {
                 res.should.be.an('object');
                 res.status.should.equals(200);
