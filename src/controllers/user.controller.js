@@ -154,7 +154,10 @@ let userController = {
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(200).redirect('/api/user/' + results.insertId);
+                            res.status(201).json({
+                                status: 201,
+                                result: results
+                            });
                             res.end();
                         } else {
                             return next({
