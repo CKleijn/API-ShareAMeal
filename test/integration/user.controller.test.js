@@ -253,11 +253,11 @@ describe('UC-205 Modify user', () => {
         chai.request(server)
             .put('/api/user/1')
             .send({
-                firstName: 'Jaxe',
+                // firstName is missing
                 lastName: 'Doe',
                 street: 'Hogeschoollaan 5',
                 city: 'Breda',
-                // emailAdress is missing
+                emailAdress: 'jaxe.doe@server.com',
                 password: 'Passw0rd',
                 phoneNumber: '06 43643761'  
             })
@@ -266,7 +266,7 @@ describe('UC-205 Modify user', () => {
                 res.status.should.equals(400);
                 let { status, message } = res.body;
                 status.should.equals(400);
-                message.should.be.a('string').that.equals('emailAdress must be a string!');
+                message.should.be.a('string').that.equals('firstName must be a string!');
                 done();
             });
     });

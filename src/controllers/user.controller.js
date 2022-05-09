@@ -33,16 +33,16 @@ let userController = {
         let user = req.body;
         let { firstName, lastName, emailAdress, password, street, city } = user;
         try {
-            // assert(typeof firstName === 'string', 'firstName must be a string!');
-            // assert(typeof lastName === 'string', 'lastName must be a string!');
+            assert(typeof firstName === 'string', 'firstName must be a string!');
+            assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
             // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
-            // assert(typeof password === 'string', 'password must be a string!');
+            assert(typeof password === 'string', 'password must be a string!');
             // assert(password.match(passwordRegex), 'password is not valid!');
             // assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
             // assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
-            // assert(typeof street === 'string', 'street must be a string!');
-            // assert(typeof city === 'string', 'city must be a string!');
+            assert(typeof street === 'string', 'street must be a string!');
+            assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
             return next({
