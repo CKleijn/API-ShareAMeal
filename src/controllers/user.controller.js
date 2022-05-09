@@ -188,7 +188,7 @@ let userController = {
 
                                 res.status(201).json({
                                     status: 201,
-                                    result: results
+                                    result: results[0]
                                 });
                                 res.end();
                             });
