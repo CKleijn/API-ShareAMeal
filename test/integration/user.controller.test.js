@@ -110,9 +110,9 @@ describe('UC-201 Register as new user', () => {
             .end((req, res) => {
                 res.should.be.an('object');
                 res.status.should.equals(201);
-                let { status, result, userId } = res.body;
+                let { status, result } = res.body;
                 status.should.equals(201);
-                createdUserId = userId
+                createdUserId = result[0].id
                 done();
             });
     });

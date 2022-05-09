@@ -175,22 +175,23 @@ let userController = {
                 if(results[0].count === 0) {
                     connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city) VALUES (?, ?, ?, ?, ?, ?)', 
                                 [user.firstName, user.lastName, user.emailAdress, user.password, user.street, user.city], function (err, results, fields) {
-                        connection.release();
 
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            let id = results.insertId; 
-                            user = {
-                                id,
-                                ...user
-                            }
-                            res.status(201).json({
-                                status: 201,
-                                result: user,
-                                userId: id
+                            let id = results.insertId;
+
+                            connection.query('SELECT * FROM user WHERE id = ?', id, function (err, results, fields) { 
+                                connection.release();
+
+                                if (err) throw err;
+
+                                res.status(201).json({
+                                    status: 201,
+                                    result: results
+                                });
+                                res.end();
                             });
-                            res.end();
                         } else {
                             res.status(401);
                             return next({
