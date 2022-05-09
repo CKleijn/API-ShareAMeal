@@ -248,9 +248,15 @@ let userController = {
 
                 if(results.length > 0) {
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        if(results[0].isActive == 1) {
+                            results[0].isActive = true;
+                        } else {
+                            results[0].isActive = false;
+                        }
+
                         res.status(200).json({
                             status: 200,
-                            result: results
+                            result: results[0]
                         });
                         res.end();
                     } else {
@@ -264,7 +270,7 @@ let userController = {
                     res.status(404);
                     return next({
                         status: 404,
-                        message: 'User does not exist with the id of ' + userId
+                        message: 'User does not exist'
                     });
                 }
             });
@@ -342,6 +348,14 @@ let userController = {
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 if (err) throw err;
 
+                if(results[0].isActive == 1) {
+                    results[0].isActive = true;
+                } else {
+                    results[0].isActive = false;
+                }
+
+                let user = results[0];
+
                 if(results.length > 0) {
                     connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
                         connection.release();
@@ -349,7 +363,10 @@ let userController = {
                         if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            res.status(200).redirect('/api/user');
+                            res.status(200).json({
+                                status: 200,
+                                result: user
+                            });
                             res.end();
                         } else {
                             res.status(401);
@@ -363,7 +380,7 @@ let userController = {
                     res.status(400);
                     return next({
                         status: 400,
-                        message: 'User does not exist with the id of ' + userId
+                        message: 'User does not exist'
                     });
                 }
             });
