@@ -31,18 +31,18 @@ let userController = {
         // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         // const phoneNumberRegex = /([\d] *){10}/;
         let user = req.body;
-        let { firstName, lastName, emailAdress, password, street, city } = user;
+        let { emailAdress } = user;
         try {
-            assert(typeof firstName === 'string', 'firstName must be a string!');
-            assert(typeof lastName === 'string', 'lastName must be a string!');
+            // assert(typeof firstName === 'string', 'firstName must be a string!');
+            // assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
             // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
-            assert(typeof password === 'string', 'password must be a string!');
+            // assert(typeof password === 'string', 'password must be a string!');
             // assert(password.match(passwordRegex), 'password is not valid!');
             // assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
             // assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
-            assert(typeof street === 'string', 'street must be a string!');
-            assert(typeof city === 'string', 'city must be a string!');
+            // assert(typeof street === 'string', 'street must be a string!');
+            // assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
             return next({
@@ -295,13 +295,46 @@ let userController = {
                 if (err) throw err;
 
                 if(results.length > 0) {
-                    if(results[0].isActive == 1) {
-                        results[0].isActive = true;
-                    } else {
-                        results[0].isActive = false;
+                    let oldUser = results[0];
+                    let updatedUser = req.body;
+
+                    if(updatedUser.firstName) {
+                        oldUser.firstName = updatedUser.firstName
                     }
+
+                    if(updatedUser.lastName) {
+                        oldUser.lastName = updatedUser.lastName
+                    }
+
+                    if(updatedUser.emailAdress) {
+                        oldUser.emailAdress = updatedUser.emailAdress
+                    }
+
+                    if(updatedUser.password) {
+                        oldUser.password = updatedUser.password
+                    }
+
+                    if(updatedUser.phoneNumber) {
+                        oldUser.phoneNumber = updatedUser.phoneNumber
+                    }
+
+                    if(updatedUser.street) {
+                        oldUser.street = updatedUser.street
+                    }
+
+                    if(updatedUser.city) {
+                        oldUser.city = updatedUser.city
+                    }
+
+                    if(oldUser.isActive == 1) {
+                        oldUser.isActive = true;
+                    } else {
+                        oldUser.isActive = false;
+                    }
+
+                    updatedUser = oldUser;
     
-                    let user = results[0];
+                    let user = updatedUser;
 
                     connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
                         if (err) throw err;
