@@ -7,6 +7,7 @@ const server = require('../../index');
 chai.should();
 chai.use(chaiHttp);
 
+// No need to clear each time the database, because the user that i'm creating is also getting deleted on the end
 let createdUserId;
 
 // Create the tests
@@ -78,13 +79,13 @@ describe('UC-201 Register as new user', () => {
             .post('/api/user')
             .send({
                 // User is valid
-                firstName: 'Jane',
-                lastName: 'Doe',
-                street: 'Hogeschoollaan 32',
+                firstName: 'Henk',
+                lastName: 'Tank',
+                street: 'Hogeschoollaan 99',
                 city: 'Breda',
-                emailAdress: 'jane.doe@server.com',
-                password: 'paSsw0rd',
-                phoneNumber: '06 87654321' 
+                emailAdress: 'h.tank@server.com',
+                password: 'paSsw00rd',
+                phoneNumber: '06 73282561' 
             })
             .end((req, res) => {
                 res.should.be.an('object');
