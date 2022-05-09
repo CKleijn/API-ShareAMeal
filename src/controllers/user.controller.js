@@ -5,17 +5,17 @@ const dbconnection = require('../../database/dbconnection');
 // Create an UserController
 let userController = {
     validateCreateUser: (req, res, next) => {
-        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         let user = req.body;
         let { firstName, lastName, emailAdress, password, street, city } = user;
         try {
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
-            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
+            // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
-            assert(password.match(passwordRegex), 'password is not valid!');
+            // assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             next();
@@ -27,20 +27,20 @@ let userController = {
         }
     },
     validateUpdateUser: (req, res, next) => {
-        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        const phoneNumberRegex = /([\d] *){10}/;
+        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        // const phoneNumberRegex = /([\d] *){10}/;
         let user = req.body;
-        let { firstName, lastName, emailAdress, password, phoneNumber, street, city } = user;
+        let { firstName, lastName, emailAdress, password, street, city } = user;
         try {
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
-            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
+            // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
-            assert(password.match(passwordRegex), 'password is not valid!');
-            assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
-            assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
+            // assert(password.match(passwordRegex), 'password is not valid!');
+            // assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+            // assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             next();
@@ -68,6 +68,7 @@ let userController = {
                         });
                         res.end();
                     } else {
+                        res.status(401);
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -91,6 +92,7 @@ let userController = {
                         });
                         res.end();
                     } else {
+                        res.status(401);
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -114,6 +116,7 @@ let userController = {
                         });
                         res.end();
                     } else {
+                        res.status(401);
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -143,6 +146,7 @@ let userController = {
                         });
                         res.end();
                     } else {
+                        res.status(401);
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -182,6 +186,7 @@ let userController = {
                             });
                             res.end();
                         } else {
+                            res.status(401);
                             return next({
                                 status: 401,
                                 message: 'Forbidden'
@@ -189,8 +194,9 @@ let userController = {
                         }
                     });
                 } else {
+                    res.status(409);
                     return next({
-                        status: 400,
+                        status: 409,
                         message: 'User already exist!'
                     });
                 }
@@ -205,6 +211,7 @@ let userController = {
             });
             res.end();
         } else {
+            res.status(401);
             return next({
                 status: 401,
                 message: 'Forbidden'
@@ -234,12 +241,14 @@ let userController = {
                         });
                         res.end();
                     } else {
+                        res.status(401);
                         return next({
                             status: 401,
                             message: 'Forbidden'
                         });
                     }
                 } else {
+                    res.status(404);
                     return next({
                         status: 404,
                         message: 'User does not exist with the id of ' + userId
@@ -282,6 +291,7 @@ let userController = {
                                     res.status(200).redirect('/api/user/' + userId);
                                     res.end();
                                 } else {
+                                    res.status(401);
                                     return next({
                                         status: 401,
                                         message: 'Forbidden'
@@ -289,15 +299,17 @@ let userController = {
                                 }
                             });
                         } else {
+                            res.status(409);
                             return next({
-                                status: 400,
+                                status: 409,
                                 message: 'User already exist!'
                             });
                         }
                     });
                 } else {
+                    res.status(400);
                     return next({
-                        status: 404,
+                        status: 400,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }
@@ -327,6 +339,7 @@ let userController = {
                             res.status(200).redirect('/api/user');
                             res.end();
                         } else {
+                            res.status(401);
                             return next({
                                 status: 401,
                                 message: 'Forbidden'
@@ -334,8 +347,9 @@ let userController = {
                         }
                     });
                 } else {
+                    res.status(400);
                     return next({
-                        status: 404,
+                        status: 400,
                         message: 'User does not exist with the id of ' + userId
                     });
                 }

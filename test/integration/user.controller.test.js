@@ -25,6 +25,7 @@ describe('UC-201 Register as new user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(400);
                 let { status, message } = res.body;
                 status.should.equals(400);
                 message.should.be.a('string').that.equals('firstName must be a string!');
@@ -87,8 +88,9 @@ describe('UC-201 Register as new user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(409);
                 let { status, message } = res.body;
-                status.should.equals(400);
+                status.should.equals(409);
                 message.should.be.a('string').that.equals('User already exist!');
                 done();
             });
@@ -107,6 +109,7 @@ describe('UC-201 Register as new user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(201);
                 let { status, result } = res.body;
                 status.should.equals(201);
                 createdUserId = result.insertId
@@ -225,6 +228,7 @@ describe('UC-204 Details of user', () => {
             .get('/api/user/0')
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(404);
                 let { status, message } = res.body;
                 status.should.equals(404);
                 message.should.be.a('string').that.equals('User does not exist with the id of 0');
@@ -236,6 +240,7 @@ describe('UC-204 Details of user', () => {
             .get('/api/user/' + createdUserId)
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(200);
                 let { status, result } = res.body;
                 status.should.equals(200);
                 done();
@@ -258,6 +263,7 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(400);
                 let { status, message } = res.body;
                 status.should.equals(400);
                 message.should.be.a('string').that.equals('firstName must be a string!');
@@ -323,8 +329,9 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(400);
                 let { status, message } = res.body;
-                status.should.equals(404);
+                status.should.equals(400);
                 message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });
@@ -366,6 +373,7 @@ describe('UC-205 Modify user', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(200);
                 let { status } = res.body;
                 status.should.equals(200);
                 done();
@@ -379,8 +387,9 @@ describe('UC-206 Delete user', () => {
             .delete('/api/user/0')
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(400);
                 let { status, message } = res.body;
-                status.should.equals(404);
+                status.should.equals(400);
                 message.should.be.a('string').that.equals('User does not exist with the id of 0');
                 done();
             });
@@ -412,6 +421,7 @@ describe('UC-206 Delete user', () => {
             .delete('/api/user/' + createdUserId)
             .end((req, res) => {
                 res.should.be.an('object');
+                res.status.should.equals(200);
                 let { status } = res.body;
                 status.should.equals(200);
                 done();
