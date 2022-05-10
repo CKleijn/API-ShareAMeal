@@ -3,72 +3,68 @@ const assert = require('assert');
 const dbconnection = require('../../database/dbconnection');
 
 // Create an UserController
-let userController = {
+const userController = {
+    // Create validation for POST
     validateCreateUser: (req, res, next) => {
-        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        let user = req.body;
-        let { firstName, lastName, emailAdress, password, street, city } = user;
+        // Get request and assign it as an user
+        const user = req.body;
+        const { firstName, lastName, emailAdress, password, street, city } = user;
         try {
+            // Put assert on each key to create the validation
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
-            // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
-            // assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
+            // Return status + message to error handler
             return next({
                 status: 400,
                 message: err.message
             });
         }
     },
+    // Create validation for PUT
     validateUpdateUser: (req, res, next) => {
-        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        // const phoneNumberRegex = /([\d] *){10}/;
-        let user = req.body;
-        let { emailAdress } = user;
+        // Get request and assign it as an user
+        const user = req.body;
+        const { emailAdress } = user;
         try {
-            // assert(typeof firstName === 'string', 'firstName must be a string!');
-            // assert(typeof lastName === 'string', 'lastName must be a string!');
+            // Put assert on each key to create the validation
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
-            // assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
-            // assert(typeof password === 'string', 'password must be a string!');
-            // assert(password.match(passwordRegex), 'password is not valid!');
-            // assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
-            // assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
-            // assert(typeof street === 'string', 'street must be a string!');
-            // assert(typeof city === 'string', 'city must be a string!');
             next();
         } catch (err) {
+            // Return status + message to error handler
             return next({
                 status: 400,
                 message: err.message
             });
         }
     },
+    // GET all users with query
     getAllUsers: (req, res, next) => {
+        // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-
+            // Check if URL has any parameters to filter on
             if(Object.keys(req.query).length === 0) {
+                // Get users without any filters
                 connection.query('SELECT * FROM user', function (err, results, fields) {
                     connection.release();
                 
                     if (err) throw err;
     
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Return JSON with response
                         res.status(200).json({
                             status: 200,
                             result: results
                         });
                         res.end();
                     } else {
-                        res.status(401);
+                        // Return status + message to error handler
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -76,23 +72,25 @@ let userController = {
                     }
                 });
             } else if(req.query.limit) {
+                // Check if limit isnt a number
                 if (isNaN(req.query.limit)) {
                     return next();
                 }
-
+                // Get users with given input as limit filter
                 connection.query('SELECT * FROM user LIMIT ?', Number.parseInt(req.query.limit), function (err, results, fields) {
                     connection.release();
                 
                     if (err) throw err;
     
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Return JSON with response
                         res.status(200).json({
                             status: 200,
                             result: results
                         });
                         res.end();
                     } else {
-                        res.status(401);
+                        // Return status + message to error handler
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -100,23 +98,25 @@ let userController = {
                     }
                 });
             } else if(req.query.firstName) {
+                // Check if firstName isnt a string
                 if (typeof req.query.firstName !== 'string') {
                     return next();
                 }
-
+                // Get users with given input as firstName filter
                 connection.query('SELECT * FROM user WHERE firstName = ?', req.query.firstName, function (err, results, fields) {
                     connection.release();
                 
                     if (err) throw err;
     
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Return JSON with response
                         res.status(200).json({
                             status: 200,
                             result: results
                         });
                         res.end();
                     } else {
-                        res.status(401);
+                        // Return status + message to error handler
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -124,6 +124,11 @@ let userController = {
                     }
                 });
             } else if(req.query.isActive) {
+                // Check if isActive isnt a string
+                if (typeof req.query.isActive !== 'string') {
+                    return next();
+                }
+                // Set int to boolean
                 let isActive;
 
                 if(req.query.isActive === 'true') {
@@ -133,20 +138,21 @@ let userController = {
                 } else {
                     return next();
                 }
-
+                // Get users with given input as isActive filter
                 connection.query('SELECT * FROM user WHERE isActive = ?', isActive, function (err, results, fields) {
                     connection.release();
                 
                     if (err) throw err;
     
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Return JSON with response
                         res.status(200).json({
                             status: 200,
                             result: results
                         });
                         res.end();
                     } else {
-                        res.status(401);
+                        // Return status + message to error handler
                         return next({
                             status: 401,
                             message: 'Forbidden'
@@ -154,44 +160,48 @@ let userController = {
                     }
                 });
             } else {
+                // Return status + message to error handler
                 return next({
-                    status: 400
+                    status: 400,
+                    message: 'Something went wrong!'
                 });
             }
         });
     },
+    // POST user with given input
     addUser: (req, res, next) => {
+        // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-
-            let user = req.body;
-                user = {
-                    ...user
-                }
-                
+            // Get request and assign it as an user
+            const user = {
+                ...req.body
+            }
+            // Check if emailAdress already exists
             connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', user.emailAdress, function (err, results, fields) {
                 if (err) throw err;
-
+                // If emailaddress is unique get into the if statement
                 if(results[0].count === 0) {
+                    // Create new user
                     connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city) VALUES (?, ?, ?, ?, ?, ?)', 
                                 [user.firstName, user.lastName, user.emailAdress, user.password, user.street, user.city], function (err, results, fields) {
 
                         if (err) throw err;
 
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            let id = results.insertId;
-
-                            connection.query('SELECT * FROM user WHERE id = ?', id, function (err, results, fields) { 
+                            const userId = results.insertId;
+                            // Get user with given userId
+                            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) { 
                                 connection.release();
 
                                 if (err) throw err;
-
-                                if(results[0].isActive == 1) {
+                                // Set int to boolean
+                                if(results[0].isActive === 1) {
                                     results[0].isActive = true;
                                 } else {
                                     results[0].isActive = false;
                                 }
-
+                                // Return JSON with response
                                 res.status(201).json({
                                     status: 201,
                                     result: results[0]
@@ -199,7 +209,7 @@ let userController = {
                                 res.end();
                             });
                         } else {
-                            res.status(401);
+                            // Return status + message to error handler
                             return next({
                                 status: 401,
                                 message: 'Forbidden'
@@ -207,7 +217,7 @@ let userController = {
                         }
                     });
                 } else {
-                    res.status(409);
+                    // Return status + message to error handler
                     return next({
                         status: 409,
                         message: 'User already exist!'
@@ -216,58 +226,63 @@ let userController = {
             });
         });
     },
+    // GET user profile with query
     getUserProfile: (req, res, next) => {
         if(res.statusCode >= 200 && res.statusCode <= 299) {
+            // Return JSON with response
             res.status(200).json({
                 status: 200,
                 result: 'End-point not realised yet'
             });
             res.end();
         } else {
-            res.status(401);
+            // Return status + message to error handler
             return next({
                 status: 401,
                 message: 'Forbidden'
             });
         }
     },
+    // GET user with given userId
     getUserById: (req, res, next) => {
+        // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-           
+            // Get userId paramater from URL
             const userId = req.params.userId;
-
+            // Check if userId isnt a number
             if (isNaN(userId)) {
                 return next();
             }
-
+            // Get the user with the given userId
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 connection.release();
             
                 if (err) throw err;
-
+                // If an user is found get into the if statement
                 if(results.length > 0) {
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        if(results[0].isActive == 1) {
+                        // Set int to boolean
+                        if(results[0].isActive === 1) {
                             results[0].isActive = true;
                         } else {
                             results[0].isActive = false;
                         }
-
+                        // Return JSON with response
                         res.status(200).json({
                             status: 200,
                             result: results[0]
                         });
                         res.end();
                     } else {
-                        res.status(401);
+                        // Return status + message to error handler
                         return next({
                             status: 401,
                             message: 'Forbidden'
                         });
                     }
                 } else {
-                    res.status(404);
+                    // Return status + message to error handler
                     return next({
                         status: 404,
                         message: 'User does not exist'
@@ -276,43 +291,39 @@ let userController = {
             });
         });
     },
+    // PUT user with given userId and given input
     updateUserById: (req, res, next) => {
+        // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-
+            // Get userId paramater from URL
             const userId = req.params.userId;
-
+            // Check if userId isnt a number
             if (isNaN(userId)) {
                 return next();
             }
-
-            let updatedUser = req.body;
-                updatedUser = {
-                    ...updatedUser
-                }
-
+            // Get the user with the given userId
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 if (err) throw err;
-
+                // If an user is found get into the if statement
                 if(results.length > 0) {
-                    let oldUser = results[0];
-                    let updatedUser = req.body;
-
-                    updatedUser = {
-                        ...oldUser,
-                        ...updatedUser
+                    // Get request and assign it as an user
+                    let updatedUser = {
+                        ...results[0],
+                        ...req.body
                     }
-
-                    if(updatedUser.isActive == 1) {
+                    // Set int to boolean
+                    if(updatedUser.isActive === 1) {
                         updatedUser.isActive = true;
                     } else {
                         updatedUser.isActive = false;
                     }
-
+                    // Check if emailAdress already exists
                     connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
                         if (err) throw err;
-        
+                        // If emailaddress is unique get into the if statement
                         if(results[0].count === 0) {
+                            // Update the user
                             connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
                                     [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
                                     function (err, results, fields) {
@@ -321,13 +332,14 @@ let userController = {
                                 if (err) throw err;
         
                                 if(res.statusCode >= 200 && res.statusCode <= 299) {
+                                    // Return JSON with response
                                     res.status(200).json({
                                         status: 200,
                                         result: updatedUser
                                     });
                                     res.end();
                                 } else {
-                                    res.status(401);
+                                    // Return status + message to error handler
                                     return next({
                                         status: 401,
                                         message: 'Forbidden'
@@ -335,7 +347,7 @@ let userController = {
                                 }
                             });
                         } else {
-                            res.status(409);
+                            // Return status + message to error handler
                             return next({
                                 status: 409,
                                 message: 'User already exist!'
@@ -343,7 +355,7 @@ let userController = {
                         }
                     });
                 } else {
-                    res.status(400);
+                    // Return status + message to error handler
                     return next({
                         status: 400,
                         message: 'User does not exist'
@@ -352,33 +364,37 @@ let userController = {
             });
         });
     },
+    // DELETE user with given userId
     deleteUserById: (req, res, next) => {
+        // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-
+            // Get userId paramater from URL
             const userId = req.params.userId;
-
+            // Check if userId isnt a number
             if (isNaN(userId)) {
                 return next();
             }
-
+            // Get the user with the given userId
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
                 if (err) throw err;
-
+                // If an user is found get into the if statement
                 if(results.length > 0) {
-                     connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
+                    // Delete the user
+                    connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
                         connection.release();
                     
                         if (err) throw err;
         
                         if(res.statusCode >= 200 && res.statusCode <= 299) {
+                            // Return JSON with response
                             res.status(200).json({
                                 status: 200,
                                 message: 'User has been deleted'
                             });
                             res.end();
                         } else {
-                            res.status(401);
+                            // Return status + message to error handler
                             return next({
                                 status: 401,
                                 message: 'Forbidden'
@@ -386,7 +402,7 @@ let userController = {
                         }
                     });
                 } else {
-                    res.status(400);
+                    // Return status + message to error handler
                     return next({
                         status: 400,
                         message: 'User does not exist'
@@ -396,5 +412,5 @@ let userController = {
         });
     }
 };
-
+// Export the userController
 module.exports = userController;
