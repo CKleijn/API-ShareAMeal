@@ -6,6 +6,9 @@ const dbconnection = require('../../database/dbconnection');
 const userController = {
     // Create validation for POST
     validateCreateUser: (req, res, next) => {
+        // Validation regex
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         // Get request and assign it as an user
         const user = req.body;
         const { firstName, lastName, emailAdress, password, street, city } = user;
@@ -14,7 +17,9 @@ const userController = {
             assert(typeof firstName === 'string', 'firstName must be a string!');
             assert(typeof lastName === 'string', 'lastName must be a string!');
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
+            assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
             next();
@@ -28,6 +33,10 @@ const userController = {
     },
     // Create validation for PUT
     validateUpdateUser: (req, res, next) => {
+        // Validation regex
+        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        // const phoneNumberRegex = /([\d] *){10}/;
         // Get request and assign it as an user
         const user = req.body;
         const { emailAdress } = user;
