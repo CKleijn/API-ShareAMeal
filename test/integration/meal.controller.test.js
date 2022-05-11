@@ -23,7 +23,6 @@ describe('UC-301 Create a meal', () => {
                 isToTakeHome: 1,
                 dateTime: '2022-03-22T16:35:00.000Z',
                 imageUrl: 'https://miljuschka.nl/wp-content/uploads/2021/02/Pasta-bolognese-3-2.jpg',
-                allergenes: 'gluten,lactose',
                 maxAmountOfParticipants: 4,
                 price: 12.75,
                 // cookId: 1,
@@ -78,7 +77,6 @@ describe('UC-301 Create a meal', () => {
                 isToTakeHome: 1,
                 dateTime: '2022-03-22T16:35:00.000Z',
                 imageUrl: 'https://miljuschka.nl/wp-content/uploads/2021/02/Pasta-bolognese-3-2.jpg',
-                allergenes: 'gluten,lactose',
                 maxAmountOfParticipants: 4,
                 price: 12.75,
                 // cookId: 1,
@@ -87,9 +85,9 @@ describe('UC-301 Create a meal', () => {
             })
             .end((req, res) => {
                 res.should.be.an('object');
-                let { status } = res.body;
+                let { status, result } = res.body;
                 status.should.equals(201);
-                createdMealId = res.body.result[0].id;
+                createdMealId = result.id;
                 done();
             });
     });
@@ -108,7 +106,6 @@ describe('UC-302 Modify meal', () => {
                 isToTakeHome: 1,
                 dateTime: '2022-03-22T16:35:00.000Z',
                 imageUrl: 'https://miljuschka.nl/wp-content/uploads/2021/02/Pasta-bolognese-3-2.jpg',
-                allergenes: 'gluten,lactose',
                 maxAmountOfParticipants: 4,
                 price: 12.75,
                 // cookId: 1,
@@ -191,7 +188,6 @@ describe('UC-302 Modify meal', () => {
                 isToTakeHome: 1,
                 dateTime: '2022-03-22T16:35:00.000Z',
                 imageUrl: 'https://miljuschka.nl/wp-content/uploads/2021/02/Pasta-bolognese-3-2.jpg',
-                allergenes: 'gluten,lactose',
                 maxAmountOfParticipants: 5,
                 price: 12.75,
                 // cookId: 1,
@@ -218,7 +214,6 @@ describe('UC-302 Modify meal', () => {
                 isToTakeHome: 1,
                 dateTime: '2022-03-22T16:35:00.000Z',
                 imageUrl: 'https://miljuschka.nl/wp-content/uploads/2021/02/Pasta-bolognese-3-2.jpg',
-                allergenes: 'gluten,lactose',
                 maxAmountOfParticipants: 5,
                 price: 12.75,
                 // cookId: 1,
