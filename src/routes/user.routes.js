@@ -7,8 +7,8 @@ const userController = require('../controllers/user.controller');
 router.route('/api/user')
     // Get all users
     .get(userController.getAllUsers)
-    // Create an user
-    .post(userController.validateUser, userController.addUser);
+    // Create an user + create validation
+    .post(userController.validateCreateUser, userController.addUser);
 
 // Get user profile
 router.get('/api/user/profile', userController.getUserProfile);
@@ -17,9 +17,10 @@ router.get('/api/user/profile', userController.getUserProfile);
 router.route('/api/user/:userId')
     // Get specific user on userId
     .get(userController.getUserById)
-    // Update specific user on userId
-    .put(userController.validateUser, userController.updateUserById)
+    // Update specific user on userId + update validation
+    .put(userController.validateUpdateUser, userController.updateUserById)
     // Delete specific user on userId
     .delete(userController.deleteUserById);
 
+// Export the userRouter
 module.exports = router;
