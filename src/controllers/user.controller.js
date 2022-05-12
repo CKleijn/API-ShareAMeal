@@ -328,7 +328,7 @@ const userController = {
                         updatedUser.isActive = false;
                     }
                     // Check if emailAdress already exists
-                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ?', updatedUser.emailAdress, function (err, results, fields) {
+                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ? AND id <> ?', [updatedUser.emailAdress, userId], function (err, results, fields) {
                         if (err) throw err;
                         // If emailaddress is unique get into the if statement
                         if(results[0].count === 0) {
