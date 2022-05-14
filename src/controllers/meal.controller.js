@@ -68,9 +68,11 @@ const mealController = {
             const meal = {
                     ...req.body
                 }
+            // From array to string
+            meal.allergenes = meal.allergenes.join();
             // Create the meal    
             connection.query("INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                            [meal.name, meal.description, meal.isActive, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes.join(), req.userId], 
+                            [meal.name, meal.description, meal.isActive, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
                             (err, results, fields) => {
                 connection.release();
 
@@ -135,7 +137,7 @@ const mealController = {
                 } else {
                     // Return status + message to error handler
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'Meal does not exist with the id of ' + mealId
                     });
                 }
@@ -163,8 +165,8 @@ const mealController = {
                     if(cookId !== results[0].cookId) {
                         // Return status + message to error handler
                         return next({
-                            status: 401,
-                            message: 'Forbidden'
+                            status: 403,
+                            message: 'Not the owner of the data!'
                         });
                     }
                     // Get request and assign it as a meal
@@ -172,6 +174,8 @@ const mealController = {
                             ...results[0],
                             ...req.body
                         }
+                    // From array to string
+                    updatedMeal.allergenes = updatedMeal.allergenes.join();
                     // Update the meal
                     connection.query('UPDATE meal SET name = ?, description = ?, isActive = ?, isVega = ?, isVegan = ?, isToTakeHome = ?, dateTime = ?, imageUrl = ?, allergenes = ?, maxAmountOfParticipants = ?, price = ? WHERE id = ?',
                     [updatedMeal.name, updatedMeal.description, updatedMeal.isActive, updatedMeal.isVega, updatedMeal.isVegan, updatedMeal.isToTakeHome, updatedMeal.dateTime, updatedMeal.imageUrl, updatedMeal.allergenes, updatedMeal.maxAmountOfParticipants, updatedMeal.price, mealId],
@@ -185,7 +189,7 @@ const mealController = {
                             res.status(200).json({
                                 status: 200,
                                 message: 'Meal has been updated!',
-                                result: formatMeal(updatedMeal)
+                                result: formatMeal([updatedMeal])
                             });
                             res.end();
                         } else {
@@ -199,7 +203,7 @@ const mealController = {
                 } else {
                     // Return status + message to error handler
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'Meal does not exist with the id of ' + mealId
                     });
                 }
@@ -228,8 +232,8 @@ const mealController = {
                     if(cookId !== results[0].cookId) {
                         // Return status + message to error handler
                         return next({
-                            status: 401,
-                            message: 'Forbidden'
+                            status: 403,
+                            message: 'Not the owner of the data!'
                         });
                     }
                     // Delete the meal
@@ -256,7 +260,7 @@ const mealController = {
                 } else {
                     // Return status + message to error handler
                     return next({
-                        status: 401,
+                        status: 404,
                         message: 'Meal does not exist with the id of ' + mealId
                     });
                 }
@@ -291,7 +295,7 @@ const formatMeal = (results) => {
         result.isVegan = boolObj.isVegan;
         result.isToTakeHome = boolObj.isToTakeHome;
         // From string to array
-        result.allergenes = result.allergenes.split(",");
+        result.allergenes = result.allergenes.split(',');
         // Check if allergenes is empty
         if (result.allergenes.length === 0) {
             result.allergenes = [];

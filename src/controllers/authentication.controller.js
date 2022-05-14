@@ -56,8 +56,8 @@ const authController = {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             res.status(401).json({
-                error: 'Authorization header missing!',
-                datetime: new Date().toISOString()
+                status: 401,
+                message: 'Not logged in!'
             });
         } else {
             const token = authHeader.substring(7, authHeader.length)
@@ -65,8 +65,8 @@ const authController = {
             jwt.verify(token, jwtSecretKey, (err, payload) => {
                 if (err) {
                     res.status(401).json({
-                        error: 'Not authorized',
-                        datetime: new Date().toISOString()
+                        status: 401,
+                        message: 'Invalid token!'
                     });
                 }
                 if (payload) {
