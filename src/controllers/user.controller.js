@@ -163,21 +163,63 @@ const userController = {
     },
     // GET user profile with query
     getUserProfile: (req, res, next) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
-            // Return JSON with response
-            res.status(200).json({
-                status: 200,
-                result: 'End-point not realised yet'
+         // Open connection and throw an error if it exist
+         dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+            // Get userId from JWT
+            const userId = req.userId;
+            // Get the user with the given userId
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                connection.release();
+            
+                if (err) throw err;
+                // If an user is found get into the if statement
+                if(results.length > 0) {
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Set int to boolean
+                        if(results[0].isActive === 1) {
+                            results[0].isActive = true;
+                        } else {
+                            results[0].isActive = false;
+                        }
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            result: results[0]
+                        });
+                        res.end();
+                    } else {
+                        // Return status + message to error handler
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                } else {
+                    // Return status + message to error handler
+                    return next({
+                        status: 404,
+                        message: 'User does not exist'
+                    });
+                }
             });
-            res.end();
-        } else {
-            // Return status + message to error handler
-            return next({
-                status: 401,
-                message: 'Forbidden'
-            });
-        }
+        });
     },
+    //     if(res.statusCode >= 200 && res.statusCode <= 299) {
+    //         // Return JSON with response
+    //         res.status(200).json({
+    //             status: 200,
+    //             result: 'End-point not realised yet'
+    //         });
+    //         res.end();
+    //     } else {
+    //         // Return status + message to error handler
+    //         return next({
+    //             status: 401,
+    //             message: 'Forbidden'
+    //         });
+    //     }
+    // },
     // GET user with given userId
     getUserById: (req, res, next) => {
         // Open connection and throw an error if it exist
@@ -232,10 +274,20 @@ const userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
             // Get userId paramater from URL
-            const userId = req.params.userId;
+            const paramUserId = req.params.userId;
             // Check if userId isnt a number
-            if (isNaN(userId)) {
+            if (isNaN(paramUserId)) {
                 return next();
+            }
+            // Get userId paramater from URL
+            const userId = req.userId;
+            // Check if id's aren't equal
+            if(paramUserId !== userId) {
+                // Return status + message to error handler
+                return next({
+                    status: 401,
+                    message: 'Forbidden'
+                });
             }
             // Get the user with the given userId
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
@@ -305,10 +357,20 @@ const userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
             // Get userId paramater from URL
-            const userId = req.params.userId;
+            const paramUserId = req.params.userId;
             // Check if userId isnt a number
-            if (isNaN(userId)) {
+            if (isNaN(paramUserId)) {
                 return next();
+            }
+            // Get userId paramater from URL
+            const userId = req.userId;
+            // Check if id's aren't equal
+            if(paramUserId !== userId) {
+                // Return status + message to error handler
+                return next({
+                    status: 401,
+                    message: 'Forbidden'
+                });
             }
             // Get the user with the given userId
             connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
