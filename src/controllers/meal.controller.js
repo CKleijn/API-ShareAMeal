@@ -350,7 +350,7 @@ const mealController = {
 
                         if (err) throw err;
                         // Store single meal in let
-                        let fullMeal = resultsMeal[0];
+                        let fullMeal = updatedMeal;
                         // Get cook with cookId
                         connection.query('SELECT * FROM user WHERE id = ?', fullMeal.cookId, function (err, resultsCook, fields) {
                             if (err) throw err;

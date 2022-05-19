@@ -11,10 +11,11 @@ const authController = {
             assert(typeof req.body.emailAdress === 'string', 'emailAdress must be a string!');
             assert(typeof req.body.password === 'string', 'password must be a string!');
             next();
-        } catch (ex) {
-            res.status(422).json({
-                error: ex.toString(),
-                datetime: new Date().toISOString()
+        } catch (err) {
+            // Return status + message to error handler
+            return next({
+                status: 400,
+                message: err.message
             });
         }
     },
@@ -37,15 +38,15 @@ const authController = {
 
                         jwt.sign(payload, jwtSecretKey, { expiresIn: '20d' }, function (err, token) {
                             res.status(200).json({
-                                statusCode: 200,
-                                results: { ...userInfo, token }
+                                status: 200,
+                                result: { ...userInfo, token }
                             });
                         });
 
                     } else {
-                        res.status(401).json({
-                            message: 'User not found or password invalid',
-                            datetime: new Date().toISOString()
+                        res.status(404).json({
+                            status: 404,
+                            message: 'User not found or password invalid'
                         });
                     }
                 }
