@@ -9,9 +9,10 @@ const userController = {
         // Validation regex
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        const phoneNumberRegex = /([\d] *){10}/;
         // Get request and assign it as an user
         const user = req.body;
-        const { firstName, lastName, emailAdress, password, street, city } = user;
+        const { firstName, lastName, emailAdress, password, street, city, phoneNumber } = user;
         try {
             // Put assert on each key to create the validation
             assert(typeof firstName === 'string', 'firstName must be a string!');
@@ -22,6 +23,8 @@ const userController = {
             assert(password.match(passwordRegex), 'password is not valid!');
             assert(typeof street === 'string', 'street must be a string!');
             assert(typeof city === 'string', 'city must be a string!');
+            assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+            assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
             next();
         } catch (err) {
             // Return status + message to error handler
@@ -34,15 +37,42 @@ const userController = {
     // Create validation for PUT
     validateUpdateUser: (req, res, next) => {
         // Validation regex
-        // const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        // const phoneNumberRegex = /([\d] *){10}/;
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        const phoneNumberRegex = /([\d] *){10}/;
         // Get request and assign it as an user
         const user = req.body;
-        const { emailAdress } = user;
+        const { firstName, lastName, emailAdress, password, street, city, phoneNumber } = user;
         try {
             // Put assert on each key to create the validation
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
+
+            if(firstName) {
+                assert(typeof firstName === 'string', 'firstName must be a string!');
+            }
+
+            if(lastName) {
+                assert(typeof lastName === 'string', 'lastName must be a string!');
+            }
+
+            if(password) {
+                assert(typeof password === 'string', 'password must be a string!');
+                assert(password.match(passwordRegex), 'password is not valid!');
+            }
+
+            if(street) {
+                assert(typeof street === 'string', 'street must be a string!');
+            }
+
+            if(city) {
+                assert(typeof city === 'string', 'city must be a string!');
+            }
+
+            if(phoneNumber) {
+                assert(typeof phoneNumber === 'string', 'phoneNumber must be a string!');
+                assert(phoneNumber.match(phoneNumberRegex), 'phoneNumber is not valid!');
+            }
             next();
         } catch (err) {
             // Return status + message to error handler

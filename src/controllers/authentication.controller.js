@@ -7,9 +7,13 @@ const jwtSecretKey = process.env.JWT_SECRET;
 // Create an AuthController
 const authController = {
     validateLogin(req, res, next) {
+        // Get request and assign it as an user
+        const user = req.body;
+        const { emailAdress, password } = user;
         try {
-            assert(typeof req.body.emailAdress === 'string', 'emailAdress must be a string!');
-            assert(typeof req.body.password === 'string', 'password must be a string!');
+            // Put assert on each key to create the validation
+            assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(typeof password === 'string', 'password must be a string!');
             next();
         } catch (err) {
             // Return status + message to error handler

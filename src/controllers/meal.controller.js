@@ -1,12 +1,11 @@
 // Default settings
 const assert = require('assert');
-const { json } = require('express/lib/response');
 const dbconnection = require('../../database/dbconnection');
 
 // Create an MealController
 const mealController = {
-    // Create validation
-    validateMeal: (req, res, next) => {
+    // Create validation for POST
+    validateCreateMeal: (req, res, next) => {
         // Get request and assign it as an user
         const meal = req.body;
         const { name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
@@ -22,7 +21,70 @@ const mealController = {
             assert(typeof imageUrl === 'string', 'imageUrl must be a string!');
             assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
             assert(typeof price === 'number', 'price must be a number!');
-            // assert(typeof allergenes === 'array', 'allergenes must be an array!');
+            assert(Array.isArray(allergenes), 'allergenes must be an array!');
+            next();
+        } catch (err) {
+            // Return status + message to error handler
+            return next({
+                status: 400,
+                message: err.message
+            });
+        }
+    },
+    // Create validation for PUT
+    validateUpdateMeal: (req, res, next) => {
+        // Get request and assign it as an user
+        const meal = req.body;
+        const { name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
+        try {
+            // Put assert on each key to create the validation
+            if(name || maxAmountOfParticipants || price) {
+                if(name) {
+                    assert(typeof name === 'string', 'name must be a string!');
+                }
+
+                if(maxAmountOfParticipants) {
+                    assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
+                }
+
+                if(price) {
+                    assert(typeof price === 'number', 'price must be a number!');
+                }
+            } else {
+                // Return status + message to error handler
+                return next({
+                    status: 400,
+                    message: 'name, maxAmountOfParticipants or price is required!'
+                });
+            }
+
+            if(description) {
+                assert(typeof description === 'string', 'description must be a string!');
+            }
+
+            if(isActive) {
+                assert(typeof isActive === 'boolean' || typeof isActive === 'number', 'IsActive must be a boolean or number between 0 and 1!');
+            }
+
+            if(isVega) {
+                assert(typeof isVega === 'boolean' || typeof isVega === 'number', 'IsVega must be a boolean or number between 0 and 1!');
+            }
+
+            if(isToTakeHome) {
+                assert(typeof isToTakeHome === 'boolean' || typeof isToTakeHome === 'number', 'IsToTakeHome must be a boolean or number between 0 and 1!');
+            }
+
+            if(dateTime) {
+                assert(typeof dateTime === 'string', 'dateTime must be a string!');
+            }
+
+            if(imageUrl) {
+                assert(typeof imageUrl === 'string', 'imageUrl must be a string!');
+            }
+
+            if(allergenes) {
+                assert(Array.isArray(allergenes), 'allergenes must be an array!');
+            }
             next();
         } catch (err) {
             // Return status + message to error handler
@@ -342,7 +404,9 @@ const mealController = {
                             ...req.body
                         }
                     // From array to string
-                    updatedMeal.allergenes = updatedMeal.allergenes.join();
+                    if(req.body.allergenes) {
+                        updatedMeal.allergenes = updatedMeal.allergenes.join();
+                    }
                     // Update the meal
                     connection.query('UPDATE meal SET name = ?, description = ?, isActive = ?, isVega = ?, isVegan = ?, isToTakeHome = ?, dateTime = ?, imageUrl = ?, allergenes = ?, maxAmountOfParticipants = ?, price = ? WHERE id = ?',
                     [updatedMeal.name, updatedMeal.description, updatedMeal.isActive, updatedMeal.isVega, updatedMeal.isVegan, updatedMeal.isToTakeHome, updatedMeal.dateTime, updatedMeal.imageUrl, updatedMeal.allergenes, updatedMeal.maxAmountOfParticipants, updatedMeal.price, mealId],

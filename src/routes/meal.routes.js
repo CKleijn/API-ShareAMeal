@@ -9,14 +9,14 @@ router.route('/api/meal')
     // Get all meals
     .get(mealController.getAllMeals)
     // Create a meal + validation
-    .post(authController.validateToken, mealController.validateMeal, mealController.addMeal);
+    .post(authController.validateToken, mealController.validateCreateMeal, mealController.addMeal);
 
 // All /meal/:mealId routes
 router.route('/api/meal/:mealId')
     // Get meal by mealId
     .get(mealController.getMealById)
     // Update meal by mealId + validation
-    .put(authController.validateToken, mealController.validateMeal, mealController.updateMealById)
+    .put(authController.validateToken, mealController.validateUpdateMeal, mealController.updateMealById)
     // Delete meal by mealId
     .delete(authController.validateToken, mealController.deleteMealById);
 
