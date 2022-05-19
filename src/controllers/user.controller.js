@@ -54,127 +54,54 @@ const userController = {
     },
     // GET all users with query
     getAllUsers: (req, res, next) => {
+        // Get query paramaters
+        const { firstName, isActive, limit } = req.query;
+        // Base query
+        let queryString = 'SELECT * FROM user';
+        // Check if there is a firstName or isActive paramater
+        if(firstName || isActive) {
+            queryString += ' WHERE ';
+            // Check if there is a firstName paramater - if yes then add to query
+            if(firstName) {
+                queryString += 'firstName = "' + firstName + '"';
+            }
+            // Check if there is a firstName and an isActive paramater - if yes then add to query
+            if(firstName && isActive) {
+                queryString += ' AND ';
+            }
+            // Check if there is an isActive paramater - if yes then add to query
+            if(isActive) {
+                queryString += 'isActive = ' + isActive;
+            }
+        }
+        // Check if there is a limit paramater - if yes then add to query
+        if(limit) {
+            queryString += ' LIMIT ' + limit;
+        }
         // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-            // Check if URL has any parameters to filter on
-            if(Object.keys(req.query).length === 0) {
-                // Get users without any filters
-                connection.query('SELECT * FROM user', function (err, results, fields) {
-                    connection.release();
-                
-                    if (err) throw err;
-    
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: results
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
-                });
-            } else if(req.query.limit) {
-                // Check if limit isnt a number
-                if (isNaN(req.query.limit)) {
-                    return next();
-                }
-                // Get users with given input as limit filter
-                connection.query('SELECT * FROM user LIMIT ?', Number.parseInt(req.query.limit), function (err, results, fields) {
-                    connection.release();
-                
-                    if (err) throw err;
-    
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: results
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
-                });
-            } else if(req.query.firstName) {
-                // Check if firstName isnt a string
-                if (typeof req.query.firstName !== 'string') {
-                    return next();
-                }
-                // Get users with given input as firstName filter
-                connection.query('SELECT * FROM user WHERE firstName = ?', req.query.firstName, function (err, results, fields) {
-                    connection.release();
-                
-                    if (err) throw err;
-    
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: results
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
-                });
-            } else if(req.query.isActive) {
-                // Check if isActive isnt a string
-                if (typeof req.query.isActive !== 'string') {
-                    return next();
-                }
-                // Set int to boolean
-                let isActive;
+            // Get users with given filter
+            connection.query(queryString, function (err, results, fields) {
+                connection.release();
+            
+                if (err) throw err;
 
-                if(req.query.isActive === 'true') {
-                    isActive = true;
-                } else if(req.query.isActive === 'false'){
-                    isActive = false;
+                if(res.statusCode >= 200 && res.statusCode <= 299) {
+                    // Return JSON with response
+                    res.status(200).json({
+                        status: 200,
+                        result: formatUser(results)
+                    });
+                    res.end();
                 } else {
-                    return next();
+                    // Return status + message to error handler
+                    return next({
+                        status: 401,
+                        message: 'Forbidden'
+                    });
                 }
-                // Get users with given input as isActive filter
-                connection.query('SELECT * FROM user WHERE isActive = ?', isActive, function (err, results, fields) {
-                    connection.release();
-                
-                    if (err) throw err;
-    
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: results
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
-                });
-            } else {
-                // Return status + message to error handler
-                return next({
-                    status: 400,
-                    message: 'Something went wrong!'
-                });
-            }
+            });
         });
     },
     // POST user with given input
@@ -204,16 +131,12 @@ const userController = {
                                 connection.release();
 
                                 if (err) throw err;
-                                // Set int to boolean
-                                if(results[0].isActive === 1) {
-                                    results[0].isActive = true;
-                                } else {
-                                    results[0].isActive = false;
-                                }
+
                                 // Return JSON with response
                                 res.status(201).json({
                                     status: 201,
-                                    result: results[0]
+                                    message: 'User has been created!',
+                                    result: formatUser(results)
                                 });
                                 res.end();
                             });
@@ -237,20 +160,41 @@ const userController = {
     },
     // GET user profile with query
     getUserProfile: (req, res, next) => {
-        if(res.statusCode >= 200 && res.statusCode <= 299) {
-            // Return JSON with response
-            res.status(200).json({
-                status: 200,
-                result: 'End-point not realised yet'
+         // Open connection and throw an error if it exist
+         dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+            // Get userId from JWT
+            const userId = req.userId;
+            // Get the user with the given userId
+            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+                connection.release();
+            
+                if (err) throw err;
+                // If an user is found get into the if statement
+                if(results.length > 0) {
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            result: formatUser(results)
+                        });
+                        res.end();
+                    } else {
+                        // Return status + message to error handler
+                        return next({
+                            status: 401,
+                            message: 'Forbidden'
+                        });
+                    }
+                } else {
+                    // Return status + message to error handler
+                    return next({
+                        status: 404,
+                        message: 'User does not exist'
+                    });
+                }
             });
-            res.end();
-        } else {
-            // Return status + message to error handler
-            return next({
-                status: 401,
-                message: 'Forbidden'
-            });
-        }
+        });
     },
     // GET user with given userId
     getUserById: (req, res, next) => {
@@ -271,16 +215,10 @@ const userController = {
                 // If an user is found get into the if statement
                 if(results.length > 0) {
                     if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Set int to boolean
-                        if(results[0].isActive === 1) {
-                            results[0].isActive = true;
-                        } else {
-                            results[0].isActive = false;
-                        }
                         // Return JSON with response
                         res.status(200).json({
                             status: 200,
-                            result: results[0]
+                            result: formatUser(results)
                         });
                         res.end();
                     } else {
@@ -306,35 +244,39 @@ const userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
             // Get userId paramater from URL
-            const userId = req.params.userId;
+            const paramUserId = req.params.userId;
             // Check if userId isnt a number
-            if (isNaN(userId)) {
+            if (isNaN(paramUserId)) {
                 return next();
             }
+            // Get userId paramater from URL
+            const userId = req.userId;
             // Get the user with the given userId
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+            connection.query('SELECT * FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
                 if (err) throw err;
                 // If an user is found get into the if statement
                 if(results.length > 0) {
+                    // Check if id's aren't equal
+                    if(paramUserId != userId) {
+                        // Return status + message to error handler
+                        return next({
+                            status: 403,
+                            message: 'Not the owner of this account!'
+                        });
+                    }
                     // Get request and assign it as an user
-                    let updatedUser = {
+                    const updatedUser = {
                         ...results[0],
                         ...req.body
                     }
-                    // Set int to boolean
-                    if(updatedUser.isActive === 1) {
-                        updatedUser.isActive = true;
-                    } else {
-                        updatedUser.isActive = false;
-                    }
                     // Check if emailAdress already exists
-                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ? AND id <> ?', [updatedUser.emailAdress, userId], function (err, results, fields) {
+                    connection.query('SELECT COUNT(emailAdress) as count FROM user WHERE emailAdress = ? AND id <> ?', [updatedUser.emailAdress, paramUserId], function (err, results, fields) {
                         if (err) throw err;
                         // If emailaddress is unique get into the if statement
                         if(results[0].count === 0) {
                             // Update the user
                             connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
-                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, userId], 
+                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, paramUserId], 
                                     function (err, results, fields) {
                                 connection.release();
         
@@ -344,7 +286,8 @@ const userController = {
                                     // Return JSON with response
                                     res.status(200).json({
                                         status: 200,
-                                        result: updatedUser
+                                        message: 'User has been updated!',
+                                        result: formatUser([updatedUser])
                                     });
                                     res.end();
                                 } else {
@@ -379,18 +322,28 @@ const userController = {
         dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
             // Get userId paramater from URL
-            const userId = req.params.userId;
+            const paramUserId = req.params.userId;
             // Check if userId isnt a number
-            if (isNaN(userId)) {
+            if (isNaN(paramUserId)) {
                 return next();
             }
+            // Get userId paramater from URL
+            const userId = req.userId;
             // Get the user with the given userId
-            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) {
+            connection.query('SELECT * FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
                 if (err) throw err;
                 // If an user is found get into the if statement
                 if(results.length > 0) {
+                     // Check if id's aren't equal
+                    if(paramUserId != userId) {
+                        // Return status + message to error handler
+                        return next({
+                            status: 403,
+                            message: 'Not the owner of this account!'
+                        });
+                    }
                     // Delete the user
-                    connection.query('DELETE FROM user WHERE id = ?', userId, function (err, results, fields) {
+                    connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
                         connection.release();
                     
                         if (err) throw err;
@@ -399,7 +352,7 @@ const userController = {
                             // Return JSON with response
                             res.status(200).json({
                                 status: 200,
-                                message: 'User has been deleted'
+                                message: 'User has been deleted!'
                             });
                             res.end();
                         } else {
@@ -421,5 +374,34 @@ const userController = {
         });
     }
 };
+
+const formatUser = (results) => {
+    // Take each result
+    results.forEach(result => {
+        // Get the values that we want to modify
+        let boolObj = {
+            isActive: result.isActive
+        }
+        // Get all the keys from the object
+        let keys = Object.keys(boolObj);
+        // Check for each key if value is 1 or 0 and modify it to true or false
+        keys.forEach(key => {
+            if(boolObj[key] === 1) {
+                boolObj[key] = true;
+            } else {
+                boolObj[key] = false;
+            }
+        });
+        // Assign the modified values to the results object
+        result.isActive = boolObj.isActive;
+    });
+    // If length is 1 than return 1 result
+    if(results.length === 1) {
+        return results[0];
+    }
+    // Return the modified results
+    return results;
+}
+
 // Export the userController
 module.exports = userController;
