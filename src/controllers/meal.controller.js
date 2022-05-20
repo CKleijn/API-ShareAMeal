@@ -110,59 +110,39 @@ const mealController = {
                     resultsMeal.forEach(meal => {
                         // Store single meal in let
                         let fullMeal = meal;
-                        // Get cook with cookId
-                        connection.query('SELECT * FROM user WHERE id = ?', meal.cookId, function (err, resultsCook, fields) {
+                        // Get all userInfo from specific meal
+                        connection.query('SELECT * FROM user WHERE id IN (SELECT userId FROM meal_participants_user WHERE mealId = ?)', meal.id, function (err, results, fields) {
                             if (err) throw err;
-                            // Check if there are any cooks
-                            if(resultsCook.length > 0) {
-                                // Delete cookId
-                                delete meal.cookId
-                                // Assign meal + cook to fullMeal
-                                fullMeal = {
-                                    ...formatMeal(fullMeal),
-                                    'cook': formatUser(resultsCook[0])
-                                }
-                            } else {
-                                // Return status + message to error handler
-                                return next({
-                                    status: 404,
-                                    message: 'User does not exist with the id of ' + meal.cookId
+                            // Check if there are any users
+                            if(results.length > 0) {
+                                // Create storage to assign later
+                                let cook;
+                                let participants = [];
+                                // Get each result out of results
+                                results.forEach(result => {
+                                    // Check if cookId is same as userId
+                                    if(meal.cookId === result.id) {
+                                        // Assign new cook
+                                        cook = formatUser(result);
+                                        // Delete cookId
+                                        delete meal.cookId;
+                                    }
+                                    // Create new participant
+                                    const participant = formatUser(result)
+                                    // Push participant to array
+                                    participants.push(participant);
                                 });
-                            }
-                        });
-                        // Get all participants from meal
-                        connection.query('SELECT userId FROM meal_participants_user WHERE mealId = ?', meal.id, function (err, resultsParticipants, fields) {
-                            if (err) throw err;
-                            // Create array to store all participants
-                            let participants = [];
-                            // Check if there are participants
-                            if(resultsParticipants.length > 0) {
-                                // Get each participant
-                                resultsParticipants.forEach(participant => {
-                                    // Get participant with userId
-                                    connection.query('SELECT * FROM user WHERE id = ?', participant.userId, function (err, resultsParticipant, fields) {
-                                        // Push participant to participants array 
-                                        participants.push(formatUser(resultsParticipant[0]));
-                                        // Call the callback
-                                        callback();
-                                    });
-                                });
-                            } else {
-                                // Call the callback
-                                callback();
-                            }
-                            // Create the callback
-                            function callback() {
-                                // Check if participants array equals participants length
-                                if(resultsParticipants.length === participants.length) {
-                                    // Assign meal + participants to fullMeal
+                                // Check if results length is the same as participants array length
+                                if(results.length === participants.length) {
+                                    // Create new fullMeal
                                     fullMeal = {
-                                        ...fullMeal,
+                                        ...formatMeal(fullMeal),
+                                        'cook': cook,
                                         'participants': participants
                                     }
-                                    // Push new meal + participants
+                                    // Push new meal + cook + participants
                                     fullMeals.push(fullMeal)
-                                    // Check if array lengths are equal
+                                    // Check if resultsMeal length is the same as fullMeals array length
                                     if(resultsMeal.length === fullMeals.length) {
                                         // Release connection
                                         connection.release();
@@ -174,6 +154,12 @@ const mealController = {
                                         res.end();
                                     }
                                 }
+                            } else {
+                                // Return status + message to error handler
+                                return next({
+                                    status: 404,
+                                    message: 'User does not exist with the id of ' + meal.cookId
+                                });
                             }
                         });
                     });
@@ -198,89 +184,78 @@ const mealController = {
             // From array to string
             meal.allergenes = meal.allergenes.join();
             // Create the meal    
-            connection.query("INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            connection.query('INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                             [meal.name, meal.description, meal.isActive, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
                             (err, results, fields) => {
-
                 if (err) throw err;
                 // Get mealId
                 const mealId = results.insertId;
-                // Get meal with given mealId
-                connection.query('SELECT * FROM meal WHERE id = ?', mealId, function (err, resultsMeal, fields) { 
+                // Set cook as participant    
+                connection.query('INSERT INTO meal_participants_user (mealId, userId) VALUES (?, ?)', [mealId, req.userId], (err, resultsCookAsParticipant, fields) => {
                     if (err) throw err;
-                    // Check if there are any meals
-                    if(resultsMeal.length > 0) {
-                        // Store single meal in let
-                        let fullMeal = resultsMeal[0];
-                        // Get cook with cookId
-                        connection.query('SELECT * FROM user WHERE id = ?', fullMeal.cookId, function (err, resultsCook, fields) {
-                            if (err) throw err;
-                            // Check if there are any cooks
-                            if(resultsCook.length > 0) {
-                                // Delete cookId
-                                delete fullMeal.cookId
-                                // Assign meal + cook to fullMeal
-                                fullMeal = {
-                                    ...formatMeal(fullMeal),
-                                    'cook': formatUser(resultsCook[0])
-                                }
-                            } else {
-                                // Return status + message to error handler
-                                return next({
-                                    status: 404,
-                                    message: 'User does not exist with the id of ' + fullMeal.cookId
-                                });
-                            }
-                        });
-                        // Get all participants from meal
-                        connection.query('SELECT userId FROM meal_participants_user WHERE mealId = ?', mealId, function (err, resultsParticipants, fields) {
-                            if (err) throw err;
-                            // Create array to store all participants
-                            let participants = [];
-                            // Check if there are participants
-                            if(resultsParticipants.length > 0) {
-                                // Get each participant
-                                resultsParticipants.forEach(participant => {
-                                    // Get participant with userId
-                                    connection.query('SELECT * FROM user WHERE id = ?', participant.userId, function (err, resultsParticipant, fields) {
-                                        // Push participant to participants array 
-                                        participants.push(formatUser(resultsParticipant[0]));
-                                        // Call the callback
-                                        callback();
+                    // Get meal with given mealId
+                    connection.query('SELECT * FROM meal WHERE id = ?', mealId, function (err, resultsMeal, fields) { 
+                        if (err) throw err;
+                        // Check if there are any meals
+                        if(resultsMeal.length > 0) {
+                            // Store single meal in let
+                            let fullMeal = resultsMeal[0];
+                            // Get all userInfo from specific meal
+                            connection.query('SELECT * FROM user WHERE id IN (SELECT userId FROM meal_participants_user WHERE mealId = ?)', mealId, function (err, results, fields) {
+                                if (err) throw err;
+                                // Check if there are any users
+                                if(results.length > 0) {
+                                    // Create storage to assign later
+                                    let cook;
+                                    let participants = [];
+                                    // Get each result out of results
+                                    results.forEach(result => {
+                                        // Check if cookId is same as userId
+                                        if(fullMeal.cookId === result.id) {
+                                            // Assign new cook
+                                            cook = formatUser(result);
+                                            // Delete cookId
+                                            delete fullMeal.cookId;
+                                        }
+                                        // Create new participant
+                                        const participant = formatUser(result)
+                                        // Push participant to array
+                                        participants.push(participant);
                                     });
-                                });
-                            } else {
-                                // Call the callback
-                                callback();
-                            }
-                            // Create the callback
-                            function callback() {
-                                // Check if participants array equals participants length
-                                if(resultsParticipants.length === participants.length) {
-                                    // Assign meal + participants to fullMeal
-                                    fullMeal = {
-                                        ...fullMeal,
-                                        'participants': participants
+                                    // Check if results length is the same as participants array length
+                                    if(results.length === participants.length) {
+                                        // Create new fullMeal
+                                        fullMeal = {
+                                            ...formatMeal(fullMeal),
+                                            'cook': cook,
+                                            'participants': participants
+                                        }
+                                        // Release connection
+                                        connection.release();
+                                        // Return JSON with response
+                                        res.status(201).json({
+                                            status: 201,
+                                            message: 'Meal has been created!',
+                                            result: fullMeal
+                                        });
+                                        res.end();
                                     }
-                                    // Release connection
-                                    connection.release();
-                                    // Return JSON with response
-                                    res.status(201).json({
-                                        status: 201,
-                                        message: 'Meal has been created!',
-                                        result: fullMeal
+                                } else {
+                                    // Return status + message to error handler
+                                    return next({
+                                        status: 404,
+                                        message: 'User does not exist with the id of ' + fullMeal.cookId
                                     });
-                                    res.end();
                                 }
-                            }
-                        });
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 404,
-                            message: 'Meal does not exist with the id of ' + mealId
-                        });
-                    }
+                            });
+                        } else {
+                            // Return status + message to error handler
+                            return next({
+                                status: 404,
+                                message: 'Meal does not exist with the id of ' + mealId
+                            });
+                        }
+                    });
                 });
             });
         });
@@ -302,54 +277,34 @@ const mealController = {
                 if(resultsMeal.length > 0) {
                     // Store single meal in let
                     let fullMeal = resultsMeal[0];
-                    // Get cook with cookId
-                    connection.query('SELECT * FROM user WHERE id = ?', fullMeal.cookId, function (err, resultsCook, fields) {
+                    // Get all userInfo from specific meal
+                    connection.query('SELECT * FROM user WHERE id IN (SELECT userId FROM meal_participants_user WHERE mealId = ?)', mealId, function (err, results, fields) {
                         if (err) throw err;
-                        // Check if there are any cooks
-                        if(resultsCook.length > 0) {
-                            // Delete cookId
-                            delete fullMeal.cookId
-                            // Assign meal + cook to fullMeal
-                            fullMeal = {
-                                ...formatMeal(fullMeal),
-                                'cook': formatUser(resultsCook[0])
-                            }
-                        } else {
-                            // Return status + message to error handler
-                            return next({
-                                status: 404,
-                                message: 'User does not exist with the id of ' + fullMeal.cookId
+                        // Check if there are any users
+                        if(results.length > 0) {
+                            // Create storage to assign later
+                            let cook;
+                            let participants = [];
+                            // Get each result out of results
+                            results.forEach(result => {
+                                // Check if cookId is same as userId
+                                if(fullMeal.cookId === result.id) {
+                                    // Assign new cook
+                                    cook = formatUser(result);
+                                    // Delete cookId
+                                    delete fullMeal.cookId;
+                                }
+                                // Create new participant
+                                const participant = formatUser(result)
+                                // Push participant to array
+                                participants.push(participant);
                             });
-                        }
-                    });
-                    // Get all participants from meal
-                    connection.query('SELECT userId FROM meal_participants_user WHERE mealId = ?', mealId, function (err, resultsParticipants, fields) {
-                        if (err) throw err;
-                        // Create array to store all participants
-                        let participants = [];
-                        // Check if there are participants
-                        if(resultsParticipants.length > 0) {
-                            // Get each participant
-                            resultsParticipants.forEach(participant => {
-                                // Get participant with userId
-                                connection.query('SELECT * FROM user WHERE id = ?', participant.userId, function (err, resultsParticipant, fields) {
-                                    // Push participant to participants array 
-                                    participants.push(formatUser(resultsParticipant[0]));
-                                    // Call the callback
-                                    callback();
-                                });
-                            });
-                        } else {
-                            // Call the callback
-                            callback();
-                        }
-                        // Create the callback
-                        function callback() {
-                            // Check if participants array equals participants length
-                            if(resultsParticipants.length === participants.length) {
-                                // Assign meal + participants to fullMeal
+                            // Check if results length is the same as participants array length
+                            if(results.length === participants.length) {
+                                // Create new fullMeal
                                 fullMeal = {
-                                    ...fullMeal,
+                                    ...formatMeal(fullMeal),
+                                    'cook': cook,
                                     'participants': participants
                                 }
                                 // Release connection
@@ -361,6 +316,12 @@ const mealController = {
                                 });
                                 res.end();
                             }
+                        } else {
+                            // Return status + message to error handler
+                            return next({
+                                status: 404,
+                                message: 'User does not exist with the id of ' + fullMeal.cookId
+                            });
                         }
                     });
                 } else {
@@ -415,54 +376,34 @@ const mealController = {
                         if (err) throw err;
                         // Store single meal in let
                         let fullMeal = updatedMeal;
-                        // Get cook with cookId
-                        connection.query('SELECT * FROM user WHERE id = ?', fullMeal.cookId, function (err, resultsCook, fields) {
+                        // Get all userInfo from specific meal
+                        connection.query('SELECT * FROM user WHERE id IN (SELECT userId FROM meal_participants_user WHERE mealId = ?)', mealId, function (err, results, fields) {
                             if (err) throw err;
-                            // Check if there are any cooks
-                            if(resultsCook.length > 0) {
-                                // Delete cookId
-                                delete fullMeal.cookId
-                                // Assign meal + cook to fullMeal
-                                fullMeal = {
-                                    ...formatMeal(fullMeal),
-                                    'cook': formatUser(resultsCook[0])
-                                }
-                            } else {
-                                // Return status + message to error handler
-                                return next({
-                                    status: 404,
-                                    message: 'User does not exist with the id of ' + fullMeal.cookId
+                            // Check if there are any users
+                            if(results.length > 0) {
+                                // Create storage to assign later
+                                let cook;
+                                let participants = [];
+                                // Get each result out of results
+                                results.forEach(result => {
+                                    // Check if cookId is same as userId
+                                    if(fullMeal.cookId === result.id) {
+                                        // Assign new cook
+                                        cook = formatUser(result);
+                                        // Delete cookId
+                                        delete fullMeal.cookId;
+                                    }
+                                    // Create new participant
+                                    const participant = formatUser(result)
+                                    // Push participant to array
+                                    participants.push(participant);
                                 });
-                            }
-                        });
-                        // Get all participants from meal
-                        connection.query('SELECT userId FROM meal_participants_user WHERE mealId = ?', mealId, function (err, resultsParticipants, fields) {
-                            if (err) throw err;
-                            // Create array to store all participants
-                            let participants = [];
-                            // Check if there are participants
-                            if(resultsParticipants.length > 0) {
-                                // Get each participant
-                                resultsParticipants.forEach(participant => {
-                                    // Get participant with userId
-                                    connection.query('SELECT * FROM user WHERE id = ?', participant.userId, function (err, resultsParticipant, fields) {
-                                        // Push participant to participants array 
-                                        participants.push(formatUser(resultsParticipant[0]));
-                                        // Call the callback
-                                        callback();
-                                    });
-                                });
-                            } else {
-                                // Call the callback
-                                callback();
-                            }
-                            // Create the callback
-                            function callback() {
-                                // Check if participants array equals participants length
-                                if(resultsParticipants.length === participants.length) {
-                                    // Assign meal + participants to fullMeal
+                                // Check if results length is the same as participants array length
+                                if(results.length === participants.length) {
+                                    // Create new fullMeal
                                     fullMeal = {
-                                        ...fullMeal,
+                                        ...formatMeal(fullMeal),
+                                        'cook': cook,
                                         'participants': participants
                                     }
                                     // Release connection
@@ -475,6 +416,12 @@ const mealController = {
                                     });
                                     res.end();
                                 }
+                            } else {
+                                // Return status + message to error handler
+                                return next({
+                                    status: 404,
+                                    message: 'User does not exist with the id of ' + fullMeal.cookId
+                                });
                             }
                         });
                     });
@@ -562,6 +509,8 @@ const formatMeal = (result) => {
     result.isVega = boolObj.isVega;
     result.isVegan = boolObj.isVegan;
     result.isToTakeHome = boolObj.isToTakeHome;
+    // From string to int
+    result.price = Number(result.price);
     // From string to array
     result.allergenes = result.allergenes.split(',');
     // Check if allergenes is empty
