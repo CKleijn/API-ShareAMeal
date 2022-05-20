@@ -3,6 +3,7 @@ const assert = require('assert')
 const jwt = require('jsonwebtoken')
 const dbconnection = require('../../database/dbconnection')
 const jwtSecretKey = process.env.JWT_SECRET;
+const bcrypt = require('bcrypt');
 
 // Create an AuthController
 const authController = {
@@ -33,7 +34,8 @@ const authController = {
                 if (err) throw err;
 
                 if (rows) {
-                    if(rows && rows.length === 1 && rows[0].password == req.body.password) {
+                    if(rows && rows.length === 1 && bcrypt.compareSync(req.body.password, rows[0].password)) {
+                        
                         const { password, ...userInfo } = rows[0]
 
                         const payload = {
