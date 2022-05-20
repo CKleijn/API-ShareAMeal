@@ -501,7 +501,7 @@ const mealController = {
             connection.query('SELECT *, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId WHERE meal.id =  ?', mealId, function (err, results, fields) {
                 if (err) throw err;
                 // Check if there are any results
-                if(results.length > 0) {
+                if(results[0].id !== null) {
                     // Get cookId
                     let cookId = results[0].cookId;
                     // Get currentAmountOfParticipants
