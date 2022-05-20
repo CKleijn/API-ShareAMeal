@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `meal`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `meal` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `isActive` tinyint NOT NULL DEFAULT '0',
+  `isActive` tinyint NOT NULL DEFAULT '1',
   `isVega` tinyint NOT NULL DEFAULT '0',
   `isVegan` tinyint NOT NULL DEFAULT '0',
-  `isToTakeHome` tinyint NOT NULL DEFAULT '1',
+  `isToTakeHome` tinyint NOT NULL DEFAULT '0',
   `dateTime` datetime NOT NULL,
   `maxAmountOfParticipants` int NOT NULL DEFAULT '6',
   `price` decimal(5,2) NOT NULL,
@@ -84,13 +84,18 @@ CREATE TABLE `meal_participants_user` (
 LOCK TABLES `meal_participants_user` WRITE;
 /*!40000 ALTER TABLE `meal_participants_user` DISABLE KEYS */;
 INSERT INTO `meal_participants_user` VALUES 
+(1,1),
 (1,2),
 (1,3),
 (1,5),
+(2,2),
 (2,4),
+(3,2),
 (3,3),
 (3,4),
 (4,2),
+(4,3),
+(5,3),
 (5,4);
 /*!40000 ALTER TABLE `meal_participants_user` ENABLE KEYS */;
 UNLOCK TABLES;

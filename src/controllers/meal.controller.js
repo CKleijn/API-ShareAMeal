@@ -8,12 +8,11 @@ const mealController = {
     validateCreateMeal: (req, res, next) => {
         // Get request and assign it as an user
         const meal = req.body;
-        const { name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
+        const { name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
         try {
             // Put assert on each key to create the validation
             assert(typeof name === 'string', 'name must be a string!');
             assert(typeof description === 'string', 'description must be a string!');
-            assert(typeof isActive === 'boolean' || typeof isActive === 'number', 'IsActive must be a boolean or number between 0 and 1!');
             assert(typeof isVega === 'boolean' || typeof isVega === 'number', 'IsVega must be a boolean or number between 0 and 1!');
             assert(typeof isVegan === 'boolean' || typeof isVegan === 'number', 'IsVegan must be a boolean or number between 0 and 1!');
             assert(typeof isToTakeHome === 'boolean' || typeof isToTakeHome === 'number', 'IsToTakeHome must be a boolean or number between 0 and 1!');
@@ -35,7 +34,7 @@ const mealController = {
     validateUpdateMeal: (req, res, next) => {
         // Get request and assign it as an user
         const meal = req.body;
-        const { name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
+        const { name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
         try {
             // Put assert on each key to create the validation
             if(name || maxAmountOfParticipants || price) {
@@ -60,10 +59,6 @@ const mealController = {
 
             if(description) {
                 assert(typeof description === 'string', 'description must be a string!');
-            }
-
-            if(isActive) {
-                assert(typeof isActive === 'boolean' || typeof isActive === 'number', 'IsActive must be a boolean or number between 0 and 1!');
             }
 
             if(isVega) {
@@ -184,8 +179,8 @@ const mealController = {
             // From array to string
             meal.allergenes = meal.allergenes.join();
             // Create the meal    
-            connection.query('INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                            [meal.name, meal.description, meal.isActive, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
+            connection.query('INSERT INTO meal (name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                            [meal.name, meal.description, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
                             (err, results, fields) => {
                 if (err) throw err;
                 // Get mealId
@@ -369,8 +364,8 @@ const mealController = {
                         updatedMeal.allergenes = updatedMeal.allergenes.join();
                     }
                     // Update the meal
-                    connection.query('UPDATE meal SET name = ?, description = ?, isActive = ?, isVega = ?, isVegan = ?, isToTakeHome = ?, dateTime = ?, imageUrl = ?, allergenes = ?, maxAmountOfParticipants = ?, price = ? WHERE id = ?',
-                    [updatedMeal.name, updatedMeal.description, updatedMeal.isActive, updatedMeal.isVega, updatedMeal.isVegan, updatedMeal.isToTakeHome, updatedMeal.dateTime, updatedMeal.imageUrl, updatedMeal.allergenes, updatedMeal.maxAmountOfParticipants, updatedMeal.price, mealId],
+                    connection.query('UPDATE meal SET name = ?, description = ?, isVega = ?, isVegan = ?, isToTakeHome = ?, dateTime = ?, imageUrl = ?, allergenes = ?, maxAmountOfParticipants = ?, price = ? WHERE id = ?',
+                    [updatedMeal.name, updatedMeal.description, updatedMeal.isVega, updatedMeal.isVegan, updatedMeal.isToTakeHome, updatedMeal.dateTime, updatedMeal.imageUrl, updatedMeal.allergenes, updatedMeal.maxAmountOfParticipants, updatedMeal.price, mealId],
                             function (err, results, fields) {
 
                         if (err) throw err;
