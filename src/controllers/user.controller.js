@@ -1,6 +1,7 @@
 // Default settings
 const assert = require('assert');
 const dbconnection = require('../../database/dbconnection');
+const bcrypt = require('bcrypt');
 
 // Create an UserController
 const userController = {
@@ -148,9 +149,11 @@ const userController = {
                 if (err) throw err;
                 // If emailaddress is unique get into the if statement
                 if(results[0].count === 0) {
+                    // Hash password
+                    const hashedPassword = bcrypt.hashSync(user.password, bcrypt.genSaltSync());
                     // Create new user
                     connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city) VALUES (?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, user.password, user.street, user.city], function (err, results, fields) {
+                                [user.firstName, user.lastName, user.emailAdress, hashedPassword, user.street, user.city], function (err, results, fields) {
 
                         if (err) throw err;
 
@@ -304,6 +307,10 @@ const userController = {
                         if (err) throw err;
                         // If emailaddress is unique get into the if statement
                         if(results[0].count === 0) {
+                            // Hash password if it's in the req
+                            if(req.body.password) {
+                                updatedUser.password = bcrypt.hashSync(updatedUser.password, bcrypt.genSaltSync());
+                            }
                             // Update the user
                             connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
                                     [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, paramUserId], 
