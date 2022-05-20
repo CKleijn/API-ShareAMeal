@@ -8,13 +8,18 @@ const bcrypt = require('bcrypt');
 // Create an AuthController
 const authController = {
     validateLogin(req, res, next) {
+        // Validation regex
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         // Get request and assign it as an user
         const user = req.body;
         const { emailAdress, password } = user;
         try {
             // Put assert on each key to create the validation
             assert(typeof emailAdress === 'string', 'emailAdress must be a string!');
+            assert(emailAdress.match(emailRegex), 'emailAdress is not valid!');
             assert(typeof password === 'string', 'password must be a string!');
+            assert(password.match(passwordRegex), 'password is not valid!');
             next();
         } catch (err) {
             // Return status + message to error handler

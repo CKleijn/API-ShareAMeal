@@ -152,8 +152,8 @@ const userController = {
                     // Hash password
                     const hashedPassword = bcrypt.hashSync(user.password, bcrypt.genSaltSync());
                     // Create new user
-                    connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city) VALUES (?, ?, ?, ?, ?, ?)', 
-                                [user.firstName, user.lastName, user.emailAdress, hashedPassword, user.street, user.city], function (err, results, fields) {
+                    connection.query('INSERT INTO user (firstName, lastName, emailAdress, password, street, city, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+                                [user.firstName, user.lastName, user.emailAdress, hashedPassword, user.street, user.city, user.phoneNumber], function (err, results, fields) {
 
                         if (err) throw err;
 
@@ -312,8 +312,8 @@ const userController = {
                                 updatedUser.password = bcrypt.hashSync(updatedUser.password, bcrypt.genSaltSync());
                             }
                             // Update the user
-                            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ? WHERE id = ?',
-                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, paramUserId], 
+                            connection.query('UPDATE user SET firstName = ?, lastName = ?, emailAdress = ?, password = ?, phoneNumber = ?, street = ?, city = ?, phoneNumber = ? WHERE id = ?',
+                                    [updatedUser.firstName, updatedUser.lastName, updatedUser.emailAdress, updatedUser.password, updatedUser.phoneNumber, updatedUser.street, updatedUser.city, updatedUser.phoneNumber, paramUserId], 
                                     function (err, results, fields) {
                                 connection.release();
         
