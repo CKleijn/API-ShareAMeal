@@ -20,5 +20,8 @@ router.route('/api/meal/:mealId')
     // Delete meal by mealId
     .delete(authController.validateToken, mealController.deleteMealById);
 
+// Participate in a meal
+router.get('/api/meal/:mealId/participate', authController.validateToken, mealController.participateMeal);
+
 // Export the mealRouter
 module.exports = router;

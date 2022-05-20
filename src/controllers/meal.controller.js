@@ -483,6 +483,98 @@ const mealController = {
                 }
             });
         });
+    },
+    // Participate meal with given mealId
+    participateMeal: (req, res, next) => {
+        // Open connection and throw an error if it exist
+        dbconnection.getConnection(function(err, connection) {
+            if (err) throw err;
+            // Get mealId paramater from URL
+            const mealId = req.params.mealId;
+            // Check if mealId isnt a number
+            if (isNaN(mealId)) {
+                return next();
+            }
+            // Get currentUser from token
+            const currentUser = req.userId;
+            // Get the meal with the given mealId
+            connection.query('SELECT *, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId WHERE meal.id =  ?', mealId, function (err, results, fields) {
+                if (err) throw err;
+                // Check if there are any results
+                if(results.length > 0) {
+                    // Get cookId
+                    let cookId = results[0].cookId;
+                    // Get currentAmountOfParticipants
+                    let currentAmountOfParticipants = results[0].currentParticipants;
+                    // Get maxAmountOfParticipants
+                    let maxAmountOfParticipants = results[0].maxAmountOfParticipants;
+                    // Get participant with given meal and user
+                    connection.query('SELECT * FROM meal_participants_user WHERE mealId = ? AND userId = ?', [mealId, currentUser], (err, results, fields) => {
+                        if (err) throw err;
+                        // Check if there aren't any results
+                        if(results.length === 0) {
+                            // Check if there is room left for more participants
+                            if((maxAmountOfParticipants - currentAmountOfParticipants) > 0) {
+                                // Create a new participant for the given meal
+                                connection.query('INSERT INTO meal_participants_user (mealId, userId) VALUES (?, ?)', [mealId, currentUser], (err, results, fields) => {
+                                    connection.release();
+                                
+                                    if (err) throw err;
+                    
+                                    // Return JSON with response
+                                    res.status(200).json({
+                                        status: 200,
+                                        result: {
+                                            'currentlyParticipating': true,
+                                            'currentAmountOfParticipants': currentAmountOfParticipants + 1
+                                        }
+                                    });
+                                    res.end();
+                                });
+                            } else {
+                                // Return status + message to error handler
+                                return next({
+                                    status: 404,
+                                    message: 'There already enough participants!'
+                                });
+                            }
+                        } else {
+                            // Check if currentUser isn't the cook
+                            if(currentUser !== cookId) {
+                                // Delete participant from given meal
+                                connection.query('DELETE FROM meal_participants_user WHERE mealId = ? AND userId = ?', [mealId, currentUser], function (err, results, fields) {
+                                    connection.release();
+                                
+                                    if (err) throw err;
+                    
+                                    // Return JSON with response
+                                    res.status(200).json({
+                                        status: 200,
+                                        result: {
+                                            'currentlyParticipating': false,
+                                            'currentAmountOfParticipants': currentAmountOfParticipants - 1
+                                        }
+                                    });
+                                    res.end();
+                                });
+                            } else {
+                                // Return status + message to error handler
+                                return next({
+                                    status: 404,
+                                    message: 'You cant unsubscribe as cook!'
+                                });
+                            }
+                        }
+                    });
+                } else {
+                     // Return status + message to error handler
+                     return next({
+                        status: 404,
+                        message: 'Meal does not exist with the id of ' + mealId
+                    });
+                }
+            });
+        });
     }
 };
 
