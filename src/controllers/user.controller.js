@@ -102,7 +102,7 @@ const userController = {
                 if (count === 1) {
                     queryString += ' AND ';
                 }
-                queryString += 'isActive = ' + isActive;
+                queryString += `isActive = ` + isActive;
                 count++;
             }
             // Check if there is a firstName paramater - if yes then add to query
@@ -111,7 +111,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'firstName = "' + firstName + '"';
+                queryString += `firstName = '` + firstName + `'`;
             }
             // Check if there is a lastName paramater - if yes then add to query
             if(lastName) {
@@ -119,7 +119,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'lastName = "' + lastName + '"';
+                queryString += `lastName = '` + lastName + `'`;
             }
             // Check if there is an emailAdress paramater - if yes then add to query
             if(emailAdress) {
@@ -127,7 +127,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'emailAdress = "' + emailAdress + '"';
+                queryString += `emailAdress = '` + emailAdress + `'`;
             }
             // Check if there is a street paramater - if yes then add to query
             if(street) {
@@ -135,7 +135,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'street = "' + street + '"';
+                queryString += `street = '` + street + `'`;
             }
             // Check if there is a city paramater - if yes then add to query
             if(city) {
@@ -143,7 +143,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'city = "' + city + '"';
+                queryString += `city = '` + city + `'`;
             }
             // Check if there is a phoneNumber paramater - if yes then add to query
             if(phoneNumber) {
@@ -151,7 +151,7 @@ const userController = {
                     queryString += ' AND ';
                 }
                 count++;
-                queryString += 'phoneNumber = "' + phoneNumber + '"';
+                queryString += `phoneNumber = '` + phoneNumber + `'`;
             }
             // Check if there is a limit paramater - if yes then add to query
             if (limit) {
