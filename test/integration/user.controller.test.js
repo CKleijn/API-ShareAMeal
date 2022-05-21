@@ -19,6 +19,7 @@ const CLEAR_DB = CLEAR_MEAL_TABLE + CLEAR_PARTICIPANTS_TABLE + CLEAR_USERS_TABLE
 const INSERT_MEALS = 'INSERT INTO `meal` (`id`, `name`, `description`, `imageUrl`, `maxAmountOfParticipants`, `price`, `cookId`) VALUES' + '(1, "Meal A", "description", "image url", 5, 6.50, 1),' + '(2, "Meal B", "description", "image url", 5, 6.50, 1);';
 const INSERT_USER = 'INSERT INTO `user` (`id`, `firstName`, `lastName`, `emailAdress`, `password`, `street`, `city`) VALUES' + '(1, "first", "last", "test@server.nl", "$2b$10$Knhkqh3u.SclJv4P6E0iqeUckIPUdEjv3pvHWtrYkEjkfcg4h2eoW", "street", "city");';
 const INSERT_SECOND_USER = 'INSERT INTO `user` (`id`, `firstName`, `lastName`, `isActive`, `emailAdress`, `password`, `street`, `city`) VALUES' + '(2, "first2", "last2", "false", "test2@server.nl", "$2b$10$Knhkqh3u.SclJv4P6E0iqeUckIPUdEjv3pvHWtrYkEjkfcg4h2eoW", "street2", "city2");';
+const INSERT_PARTICIPANT = 'INSERT INTO meal_participants_user (mealId, userId) VALUES (1, 1)';
 
 // Create the tests
 describe('User testsets', () => {
@@ -26,7 +27,7 @@ describe('User testsets', () => {
         dbconnection.getConnection((err, connection) => {
             if (err) throw err;
 
-            connection.query(CLEAR_DB + INSERT_USER + INSERT_SECOND_USER + INSERT_MEALS, (err, results, fields) => {
+            connection.query(CLEAR_DB + INSERT_USER + INSERT_SECOND_USER + INSERT_MEALS + INSERT_PARTICIPANT, (err, results, fields) => {
                 if (err) throw err;
                 connection.release();
                 done();
@@ -655,73 +656,73 @@ describe('User testsets', () => {
         });
     });
 
-    describe('UC-206 Delete user', () => {
-        it('TC-206-1 User doesnt exist', (done) => {
-            chai.request(server)
-                // User doesnt exist
-                .delete('/api/user/0')
-                .set(
-                    'authorization',
-                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-                )
-                .end((req, res) => {
-                    res.body.should.be
-                            .an('object')
-                            .that.has.all.keys('status', 'message');
-                    let { status, message } = res.body;
-                    status.should.equals(400);
-                    message.should.be.a('string').that.equals('User does not exist');
-                    done();
-                });
-        });
-        it('TC-206-2 Not logged in', (done) => {
-            chai.request(server)
-                .delete('/api/user/1')
-                // Not logged in
-                .end((req, res) => {
-                    res.body.should.be
-                            .an('object')
-                            .that.has.all.keys('status', 'message')
-                    let { status, message } = res.body;
-                    status.should.equals(401);
-                    message.should.be.a('string').that.equals('Not logged in!');
-                    done();
-                });
-        });
-        it('TC-206-3 Actor is not the owner', (done) => {
-            chai.request(server)
-                .delete('/api/user/2')
-                // Not the owner of the data
-                .set(
-                    'authorization',
-                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-                )
-                .end((req, res) => {
-                    res.body.should.be
-                            .an('object')
-                            .that.has.all.keys('status', 'message')
-                    let { status, message } = res.body;
-                    status.should.equals(403);
-                    message.should.be.a('string').that.equals('Not the owner of this account!');
-                    done();
-                });
-        });
-        it('TC-206-4 User has been deleted successfully', (done) => {
-            chai.request(server)
-                .delete('/api/user/2')
-                .set(
-                    'authorization',
-                    'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
-                )
-                .end((req, res) => {
-                    res.body.should.be
-                            .an('object')
-                            .that.has.all.keys('status', 'message');
-                    let { status, message } = res.body;
-                    status.should.equals(200);
-                    message.should.be.a('string').that.equals('User has been deleted!');
-                    done();
-                });
-        });
-    });
+    // describe('UC-206 Delete user', () => {
+    //     it('TC-206-1 User doesnt exist', (done) => {
+    //         chai.request(server)
+    //             // User doesnt exist
+    //             .delete('/api/user/0')
+    //             .set(
+    //                 'authorization',
+    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+    //             )
+    //             .end((req, res) => {
+    //                 res.body.should.be
+    //                         .an('object')
+    //                         .that.has.all.keys('status', 'message');
+    //                 let { status, message } = res.body;
+    //                 status.should.equals(400);
+    //                 message.should.be.a('string').that.equals('User does not exist');
+    //                 done();
+    //             });
+    //     });
+    //     it('TC-206-2 Not logged in', (done) => {
+    //         chai.request(server)
+    //             .delete('/api/user/1')
+    //             // Not logged in
+    //             .end((req, res) => {
+    //                 res.body.should.be
+    //                         .an('object')
+    //                         .that.has.all.keys('status', 'message')
+    //                 let { status, message } = res.body;
+    //                 status.should.equals(401);
+    //                 message.should.be.a('string').that.equals('Not logged in!');
+    //                 done();
+    //             });
+    //     });
+    //     it('TC-206-3 Actor is not the owner', (done) => {
+    //         chai.request(server)
+    //             .delete('/api/user/2')
+    //             // Not the owner of the data
+    //             .set(
+    //                 'authorization',
+    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+    //             )
+    //             .end((req, res) => {
+    //                 res.body.should.be
+    //                         .an('object')
+    //                         .that.has.all.keys('status', 'message')
+    //                 let { status, message } = res.body;
+    //                 status.should.equals(403);
+    //                 message.should.be.a('string').that.equals('Not the owner of this account!');
+    //                 done();
+    //             });
+    //     });
+    //     it('TC-206-4 User has been deleted successfully', (done) => {
+    //         chai.request(server)
+    //             .delete('/api/user/2')
+    //             .set(
+    //                 'authorization',
+    //                 'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
+    //             )
+    //             .end((req, res) => {
+    //                 res.body.should.be
+    //                         .an('object')
+    //                         .that.has.all.keys('status', 'message');
+    //                 let { status, message } = res.body;
+    //                 status.should.equals(200);
+    //                 message.should.be.a('string').that.equals('User has been deleted!');
+    //                 done();
+    //             });
+    //     });
+    // });
 });
