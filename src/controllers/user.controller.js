@@ -425,6 +425,10 @@ const formatUser = (results) => {
     if(results.length === 0) {
         return [];
     }
+    // If length is 1 than set results[0]
+    if(results.length === 1) {
+        results = results[0];
+    }
     // Take each result
     results.forEach(result => {
         // Get the values that we want to modify

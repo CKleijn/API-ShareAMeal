@@ -136,11 +136,12 @@ const mealController = {
             const meal = {
                     ...req.body
                 }
+            const date = new Date(req.body.dateTime).toISOString().slice(0, 19).replace("T", " ");
             // From array to string
             meal.allergenes = meal.allergenes.join();
             // Create the meal    
             connection.query('INSERT INTO meal (name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                            [meal.name, meal.description, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
+                            [meal.name, meal.description, meal.isVega, meal.isVegan, meal.isToTakeHome, date, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
                             (err, results, fields) => {
                 if (err) throw err;
                 // Get mealId
@@ -319,6 +320,9 @@ const mealController = {
                             ...resultsMeal[0],
                             ...req.body
                         }
+                    if(req.body.dateTime) {
+                        updatedMeal.dateTime = new Date(req.body.dateTime).toISOString().slice(0, 19).replace("T", " ");
+                    }
                     // From array to string
                     if(req.body.allergenes) {
                         updatedMeal.allergenes = updatedMeal.allergenes.join();
