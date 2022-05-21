@@ -421,6 +421,10 @@ const userController = {
 };
 
 const formatUser = (results) => {
+    // If results are empty return it
+    if(results.length === 0) {
+        return [];
+    }
     // Take each result
     results.forEach(result => {
         // Get the values that we want to modify
