@@ -86,28 +86,84 @@ const userController = {
     // GET all users with query
     getAllUsers: (req, res, next) => {
         // Get query paramaters
-        const { firstName, isActive, limit } = req.query;
+        const { isActive, firstName, limit, lastName, emailAdress, street, city, phoneNumber } = req.query;
         // Base query
         let queryString = 'SELECT * FROM user';
         // Check if there is a firstName or isActive paramater
-        if(firstName || isActive) {
-            queryString += ' WHERE ';
-            // Check if there is a firstName paramater - if yes then add to query
-            if(firstName) {
-                queryString += 'firstName = "' + firstName + '"';
-            }
-            // Check if there is a firstName and an isActive paramater - if yes then add to query
-            if(firstName && isActive) {
-                queryString += ' AND ';
+        if(isActive || firstName || limit || lastName || emailAdress || street || city || phoneNumber) {
+            // Create count (MAX 2)
+            let count = 0;
+            // Add WHERE to query if it's one of those values
+            if (isActive || firstName || lastName || emailAdress || street || city || phoneNumber) {
+                queryString += ' WHERE ';
             }
             // Check if there is an isActive paramater - if yes then add to query
             if(isActive) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
                 queryString += 'isActive = ' + isActive;
+                count++;
             }
-        }
-        // Check if there is a limit paramater - if yes then add to query
-        if(limit) {
-            queryString += ' LIMIT ' + limit;
+            // Check if there is a firstName paramater - if yes then add to query
+            if(firstName) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'firstName = "' + firstName + '"';
+            }
+            // Check if there is a lastName paramater - if yes then add to query
+            if(lastName) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'lastName = "' + lastName + '"';
+            }
+            // Check if there is an emailAdress paramater - if yes then add to query
+            if(emailAdress) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'emailAdress = "' + emailAdress + '"';
+            }
+            // Check if there is a street paramater - if yes then add to query
+            if(street) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'street = "' + street + '"';
+            }
+            // Check if there is a city paramater - if yes then add to query
+            if(city) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'city = "' + city + '"';
+            }
+            // Check if there is a phoneNumber paramater - if yes then add to query
+            if(phoneNumber) {
+                if (count === 1) {
+                    queryString += ' AND ';
+                }
+                count++;
+                queryString += 'phoneNumber = "' + phoneNumber + '"';
+            }
+            // Check if there is a limit paramater - if yes then add to query
+            if (limit) {
+                queryString += ' LIMIT ' + limit;
+            }
+            // Check if count is above 2 - if yes show error message
+            if (count > 2) {
+                return next({
+                    status: 400,
+                    message: 'Maximum amount of parameters has been reached!',
+                });
+            }
         }
         // Open connection and throw an error if it exist
         dbconnection.getConnection(function(err, connection) {
@@ -118,20 +174,12 @@ const userController = {
             
                 if (err) throw err;
 
-                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                    // Return JSON with response
-                    res.status(200).json({
-                        status: 200,
-                        result: formatUser(results)
-                    });
-                    res.end();
-                } else {
-                    // Return status + message to error handler
-                    return next({
-                        status: 401,
-                        message: 'Forbidden'
-                    });
-                }
+                // Return JSON with response
+                res.status(200).json({
+                    status: 200,
+                    result: formatUser(results)
+                });
+                res.end();
             });
         });
     },
@@ -157,29 +205,21 @@ const userController = {
 
                         if (err) throw err;
 
-                        if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            const userId = results.insertId;
-                            // Get user with given userId
-                            connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) { 
-                                connection.release();
+                        const userId = results.insertId;
+                        // Get user with given userId
+                        connection.query('SELECT * FROM user WHERE id = ?', userId, function (err, results, fields) { 
+                            connection.release();
 
-                                if (err) throw err;
+                            if (err) throw err;
 
-                                // Return JSON with response
-                                res.status(201).json({
-                                    status: 201,
-                                    message: 'User has been created!',
-                                    result: formatUser(results)
-                                });
-                                res.end();
+                            // Return JSON with response
+                            res.status(201).json({
+                                status: 201,
+                                message: 'User has been created!',
+                                result: formatUser(results)
                             });
-                        } else {
-                            // Return status + message to error handler
-                            return next({
-                                status: 401,
-                                message: 'Forbidden'
-                            });
-                        }
+                            res.end();
+                        });
                     });
                 } else {
                     // Return status + message to error handler
@@ -205,20 +245,12 @@ const userController = {
                 if (err) throw err;
                 // If an user is found get into the if statement
                 if(results.length > 0) {
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: formatUser(results)
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
+                    // Return JSON with response
+                    res.status(200).json({
+                        status: 200,
+                        result: formatUser(results)
+                    });
+                    res.end();
                 } else {
                     // Return status + message to error handler
                     return next({
@@ -247,20 +279,12 @@ const userController = {
                 if (err) throw err;
                 // If an user is found get into the if statement
                 if(results.length > 0) {
-                    if(res.statusCode >= 200 && res.statusCode <= 299) {
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            result: formatUser(results)
-                        });
-                        res.end();
-                    } else {
-                        // Return status + message to error handler
-                        return next({
-                            status: 401,
-                            message: 'Forbidden'
-                        });
-                    }
+                    // Return JSON with response
+                    res.status(200).json({
+                        status: 200,
+                        result: formatUser(results)
+                    });
+                    res.end();
                 } else {
                     // Return status + message to error handler
                     return next({
@@ -319,21 +343,13 @@ const userController = {
         
                                 if (err) throw err;
         
-                                if(res.statusCode >= 200 && res.statusCode <= 299) {
-                                    // Return JSON with response
-                                    res.status(200).json({
-                                        status: 200,
-                                        message: 'User has been updated!',
-                                        result: formatUser([updatedUser])
-                                    });
-                                    res.end();
-                                } else {
-                                    // Return status + message to error handler
-                                    return next({
-                                        status: 401,
-                                        message: 'Forbidden'
-                                    });
-                                }
+                                // Return JSON with response
+                                res.status(200).json({
+                                    status: 200,
+                                    message: 'User has been updated!',
+                                    result: formatUser([updatedUser])
+                                });
+                                res.end();
                             });
                         } else {
                             // Return status + message to error handler
@@ -385,20 +401,12 @@ const userController = {
                     
                         if (err) throw err;
         
-                        if(res.statusCode >= 200 && res.statusCode <= 299) {
-                            // Return JSON with response
-                            res.status(200).json({
-                                status: 200,
-                                message: 'User has been deleted!'
-                            });
-                            res.end();
-                        } else {
-                            // Return status + message to error handler
-                            return next({
-                                status: 401,
-                                message: 'Forbidden'
-                            });
-                        }
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            message: 'User has been deleted!'
+                        });
+                        res.end();
                     });
                 } else {
                     // Return status + message to error handler
