@@ -47,12 +47,6 @@ const authController = {
                             userId: userInfo.id
                         }
 
-                        if (rows[0].isActive === 1) {
-                            rows[0].isActive = true;
-                        } else {
-                            rows[0].isActive = false;
-                        }
-
                         jwt.sign(payload, jwtSecretKey, { expiresIn: '20d' }, function (err, token) {
                             res.status(200).json({
                                 status: 200,

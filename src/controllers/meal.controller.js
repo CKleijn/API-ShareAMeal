@@ -37,9 +37,49 @@ const mealController = {
         const { name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
         try {
             // Put assert on each key to create the validation
-            assert(typeof name === 'string', 'name must be a string!');
-            assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
-            assert(typeof price === 'number', 'price must be a number!');
+            if(name || maxAmountOfParticipants || price) {
+                if(name) {
+                    assert(typeof name === 'string', 'name must be a string!');
+                }
+
+                if(maxAmountOfParticipants) {
+                    assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
+                }
+
+                if(price) {
+                    assert(typeof price === 'number', 'price must be a number!');
+                }
+            } else {
+                // Return status + message to error handler
+                return next({
+                    status: 400,
+                    message: 'name, maxAmountOfParticipants or price is required!'
+                });
+            }
+
+            if(description) {
+                assert(typeof description === 'string', 'description must be a string!');
+            }
+
+            if(isVega) {
+                assert(typeof isVega === 'boolean' || typeof isVega === 'number', 'IsVega must be a boolean or number between 0 and 1!');
+            }
+
+            if(isToTakeHome) {
+                assert(typeof isToTakeHome === 'boolean' || typeof isToTakeHome === 'number', 'IsToTakeHome must be a boolean or number between 0 and 1!');
+            }
+
+            if(dateTime) {
+                assert(typeof dateTime === 'string', 'dateTime must be a string!');
+            }
+
+            if(imageUrl) {
+                assert(typeof imageUrl === 'string', 'imageUrl must be a string!');
+            }
+
+            if(allergenes) {
+                assert(Array.isArray(allergenes), 'allergenes must be an array!');
+            }
             next();
         } catch (err) {
             // Return status + message to error handler
@@ -453,7 +493,7 @@ const mealController = {
             // Get currentUser from token
             const currentUser = req.userId;
             // Get the meal with the given mealId
-            connection.query('SELECT *, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId WHERE meal.id =  ? GROUP BY meal.id', mealId, function (err, results, fields) {
+            connection.query('SELECT *, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId WHERE meal.id =  ?', mealId, function (err, results, fields) {
                 if (err) throw err;
                 // Check if there are any results
                 if(results[0].id !== null) {
