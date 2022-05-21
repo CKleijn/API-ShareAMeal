@@ -217,7 +217,7 @@ describe('Meal testsets', () => {
                             .that.has.all.keys('status', 'message')
                     let { status, message } = res.body;
                     status.should.equals(400);
-                    message.should.be.a('string').that.equals('name, maxAmountOfParticipants or price is required!');
+                    message.should.be.a('string').that.equals('name must be a string!');
                     done();
                 });
         });

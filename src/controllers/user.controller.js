@@ -10,7 +10,7 @@ const userController = {
         // Validation regex
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        const phoneNumberRegex = /([\d] *){10}/;
+        const phoneNumberRegex =  /^06[0-9]{8}$/;
         // Get request and assign it as an user
         const user = req.body;
         const { firstName, lastName, emailAdress, password, street, city, phoneNumber } = user;
@@ -40,7 +40,7 @@ const userController = {
         // Validation regex
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        const phoneNumberRegex = /([\d] *){10}/;
+        const phoneNumberRegex =  /^06[0-9]{8}$/;
         // Get request and assign it as an user
         const user = req.body;
         const { firstName, lastName, emailAdress, password, street, city, phoneNumber } = user;
