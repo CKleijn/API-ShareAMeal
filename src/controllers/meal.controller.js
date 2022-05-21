@@ -37,25 +37,9 @@ const mealController = {
         const { name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
         try {
             // Put assert on each key to create the validation
-            if(name || maxAmountOfParticipants || price) {
-                if(name) {
-                    assert(typeof name === 'string', 'name must be a string!');
-                }
-
-                if(maxAmountOfParticipants) {
-                    assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
-                }
-
-                if(price) {
-                    assert(typeof price === 'number', 'price must be a number!');
-                }
-            } else {
-                // Return status + message to error handler
-                return next({
-                    status: 400,
-                    message: 'name, maxAmountOfParticipants or price is required!'
-                });
-            }
+            assert(typeof name === 'string', 'name must be a string!');
+            assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
+            assert(typeof price === 'number', 'price must be a number!');
 
             if(description) {
                 assert(typeof description === 'string', 'description must be a string!');

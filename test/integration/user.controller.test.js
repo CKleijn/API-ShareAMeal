@@ -43,7 +43,7 @@ describe('User testsets', () => {
                     city: 'city',
                     emailAdress: 'test3@server.nl',
                     password: 'Secret123',
-                    phoneNumber: '06 12345678'
+                    phoneNumber: '0612345678'
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -66,7 +66,7 @@ describe('User testsets', () => {
                     // emailAdress is not valid
                     emailAdress: 'test3servernl',
                     password: 'Secret123',
-                    phoneNumber: '06 12345678'
+                    phoneNumber: '0612345678'
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -89,7 +89,7 @@ describe('User testsets', () => {
                     emailAdress: 'test3@server.nl',
                     // password is not valid
                     password: 'secret',
-                    phoneNumber: '06 12345678'
+                    phoneNumber: '0612345678'
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -112,7 +112,7 @@ describe('User testsets', () => {
                     city: 'city',
                     emailAdress: 'test@server.nl',
                     password: 'Secret123',
-                    phoneNumber: '06 12345678'
+                    phoneNumber: '0612345678'
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -135,7 +135,7 @@ describe('User testsets', () => {
                     city: 'city',
                     emailAdress: 'test3@server.nl',
                     password: 'Secret123',
-                    phoneNumber: '06 12345678'
+                    phoneNumber: '0612345678'
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -164,7 +164,7 @@ describe('User testsets', () => {
                     result.city.should.equal('city');
                     result.emailAdress.should.equal('test3@server.nl');
                     result.password.should.equal(result.password);
-                    result.phoneNumber.should.equal('06 12345678');
+                    result.phoneNumber.should.equal('0612345678');
                     result.roles.should.equal('editor,guest');
                     done();
                 });
@@ -618,7 +618,7 @@ describe('User testsets', () => {
                 .send({
                     // User is valid
                     emailAdress: 'test@server.nl',
-                    phoneNumber: '06 87654321'  
+                    phoneNumber: '0687654321'  
                 })
                 .end((req, res) => {
                     res.body.should.be
@@ -647,7 +647,7 @@ describe('User testsets', () => {
                     result.city.should.equal('city');
                     result.emailAdress.should.equal('test@server.nl');
                     result.password.should.equal('$2b$10$Knhkqh3u.SclJv4P6E0iqeUckIPUdEjv3pvHWtrYkEjkfcg4h2eoW');
-                    result.phoneNumber.should.equal('06 87654321');
+                    result.phoneNumber.should.equal('0687654321');
                     result.roles.should.equal('editor,guest');
                     done();
                 });

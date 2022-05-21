@@ -33,7 +33,7 @@ const authController = {
         dbconnection.getConnection((err, connection) => {
             if (err) throw err;
 
-            connection.query('SELECT id, emailAdress, password, firstName, lastName FROM user WHERE emailAdress = ?', [req.body.emailAdress], (err, rows, fields) => {
+            connection.query('SELECT * FROM user WHERE emailAdress = ?', [req.body.emailAdress], (err, rows, fields) => {
                 connection.release()
                 
                 if (err) throw err;
@@ -45,6 +45,12 @@ const authController = {
 
                         const payload = {
                             userId: userInfo.id
+                        }
+
+                        if (rows[0].isActive === 1) {
+                            rows[0].isActive = true;
+                        } else {
+                            rows[0].isActive = false;
                         }
 
                         jwt.sign(payload, jwtSecretKey, { expiresIn: '20d' }, function (err, token) {
