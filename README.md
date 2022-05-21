@@ -1,8 +1,7 @@
 
 # API - Share A Meal
 
-In this repository I tried to recreate the Share A Meal API that I've used in my previous project [Share A Meal App](https://github.com/CKleijn/ShareAMeal).
-
+In this repository I recreate the Share A Meal API that I've used in my previous project [Share A Meal App](https://github.com/CKleijn/ShareAMeal).
 
 ## Features
 
@@ -203,15 +202,59 @@ In this repository I tried to recreate the Share A Meal API that I've used in my
 | :-------- | :------- | :------------------------- |
 | `mealId` | `number` | **Required in URL** |
 
+## Installation
 
-## Tech Stack
+In order for the application to work you'll need to create a MySQL database. The script *(share-a-meal.create.sql)* is needed to create the database. The script *(share-a-meal.sql)* is needed to fill your database with the fitting tables is given in the project.
 
-**Server:** Node, Express
+Clone the project
 
+```bash
+  git clone https://github.com/CKleijn/API-ShareAMeal
+```
+
+Go to the project directory
+
+```bash
+  cd API-ShareAMeal
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Create .env and add those variables
+
+```bash
+PORT=
+
+JWT_SECRET=
+
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_DATABASE=
+```
+
+Start the server
+
+```bash
+  npm run start
+```
+
+## Running Tests
+
+To run tests, run the following command
+
+```bash
+  npm run test
+```
 
 ## FAQ
 
-#### Why are emailAdress and allergenes misspelled?
+#### Why are *emailAdress* and *allergenes* misspelled?
 
 This is because our teacher made a mistake in his test tool, so now we have to use the current words instead of emailAddress and allergens.
 
