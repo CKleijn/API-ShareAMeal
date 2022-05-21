@@ -9,6 +9,7 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 - Login as user
 #### User
 - Get all users
+- Get all users with filters
 - Register new user
 - Get user profile
 - Get single user
@@ -21,6 +22,8 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 - Update meal
 - Delete meal
 - Participate in meal
+- Unsubscribe from meal
+
 ## API Reference
 
 #### Login as user
@@ -43,6 +46,28 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | :----- | :------- | :------------------------- |
 | `token` | `bearer` | **Required** |
 
+#### Get all users with filters
+
+```http
+  GET /api/user?parameterOne=Value1&parameterTwo=Value2
+```
+It's possible to filter on **MAX 2** parameters in the same URL. 
+It's also possible to only filter on 1 parameter. The available parameters are written down under below.
+| Header | Type     | Description                |
+| :----- | :------- | :------------------------- |
+| `token` | `bearer` | **Required** |
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `firstName` | `string` | **Optional** |
+| `lastName` | `string` | **Optional** |
+| `isActive` | `boolean / number` | **Optional** |
+| `street` | `string` | **Optional** |
+| `city` | `string` | **Optional** |
+| `emailAdress` | `string` | **Optional** |
+| `phoneNumber` | `string` | **Optional** |
+| `limit` | `number` | **Optional** |
+
 #### Register new user
 
 ```http
@@ -55,7 +80,7 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | `lastName` | `string` | **Required** |
 | `street` | `string` | **Required** |
 | `city` | `string` | **Required** |
-| `password` | `string` | **Required** |
+| `password` | `string` | **Required / Match regex** |
 | `emailAdress` | `string` | **Required / Match regex** |
 | `phoneNumber` | `string` | **Required / Match regex** |
 
@@ -97,13 +122,13 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `userId` | `number` | **Required in URL** |
-| `firstName` | `string` |  |
-| `lastName` | `string` |  |
-| `street` | `string` | |
-| `city` | `string` |  |
-| `password` | `string` | **Match regex** |
+| `firstName` | `string` | **Optional** |
+| `lastName` | `string` | **Optional** |
+| `street` | `string` | **Optional** |
+| `city` | `string` | **Optional** |
+| `password` | `string` | **Optional / Match regex** |
 | `emailAdress` | `string` | **Required / Match regex** |
-| `phoneNumber` | `string` | **Match regex** |
+| `phoneNumber` | `string` | **Optional / Match regex** |
 
 #### Delete user
 
@@ -169,15 +194,17 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | :-------- | :------- | :------------------------- |
 | `mealId` | `number` | **Required in URL** |
 | `name` | `string` | **Required** |
-| `description` | `string` | |
-| `isVega` | `boolean / number` | |
-| `isVegan` | `boolean / number` | |
-| `isToTakeHome` | `boolean / number` | |
-| `dateTime` | `string` | |
-| `imageUrl` | `string` | |
-| `allergenes` | `object` | |
+| `description` | `string` | **Optional** |
+| `isVega` | `boolean / number` | **Optional** |
+| `isVegan` | `boolean / number` | **Optional** |
+| `isToTakeHome` | `boolean / number` | **Optional** |
+| `dateTime` | `string` | **Optional** |
+| `imageUrl` | `string` | **Optional** |
+| `allergenes` | `object` | **Optional** |
 | `maxAmountOfParticipants` | `number` | **Required** |
 | `price` | `number` | **Required** |
+
+#### Delete meal
 
 ```http
   DELETE /api/meal/:mealId
@@ -190,6 +217,8 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | :-------- | :------- | :------------------------- |
 | `mealId` | `number` | **Required in URL** |
 
+#### Participate meal
+
 ```http
   GET /api/meal/:mealId/participate
 ```
@@ -201,6 +230,32 @@ In this repository I recreate the Share A Meal API that I've used in my previous
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `mealId` | `number` | **Required in URL** |
+
+#### Unsubscribe meal
+
+```http
+  GET /api/meal/:mealId/participate
+```
+
+| Header | Type     | Description                |
+| :----- | :------- | :------------------------- |
+| `token` | `bearer` | **Required** |
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `mealId` | `number` | **Required in URL** |
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`PORT`
+`JWT_SECRET`
+`DB_HOST`
+`DB_PORT`
+`DB_USER`
+`DB_PASSWORD`
+`DB_DATABASE`
 
 ## Installation
 
@@ -222,20 +277,6 @@ Install dependencies
 
 ```bash
   npm install
-```
-
-Create .env and add those variables
-
-```bash
-PORT=
-
-JWT_SECRET=
-
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASSWORD=
-DB_DATABASE=
 ```
 
 Start the server
