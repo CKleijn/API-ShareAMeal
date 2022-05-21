@@ -37,49 +37,9 @@ const mealController = {
         const { name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes } = meal;
         try {
             // Put assert on each key to create the validation
-            if(name || maxAmountOfParticipants || price) {
-                if(name) {
-                    assert(typeof name === 'string', 'name must be a string!');
-                }
-
-                if(maxAmountOfParticipants) {
-                    assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
-                }
-
-                if(price) {
-                    assert(typeof price === 'number', 'price must be a number!');
-                }
-            } else {
-                // Return status + message to error handler
-                return next({
-                    status: 400,
-                    message: 'name, maxAmountOfParticipants or price is required!'
-                });
-            }
-
-            if(description) {
-                assert(typeof description === 'string', 'description must be a string!');
-            }
-
-            if(isVega) {
-                assert(typeof isVega === 'boolean' || typeof isVega === 'number', 'IsVega must be a boolean or number between 0 and 1!');
-            }
-
-            if(isToTakeHome) {
-                assert(typeof isToTakeHome === 'boolean' || typeof isToTakeHome === 'number', 'IsToTakeHome must be a boolean or number between 0 and 1!');
-            }
-
-            if(dateTime) {
-                assert(typeof dateTime === 'string', 'dateTime must be a string!');
-            }
-
-            if(imageUrl) {
-                assert(typeof imageUrl === 'string', 'imageUrl must be a string!');
-            }
-
-            if(allergenes) {
-                assert(Array.isArray(allergenes), 'allergenes must be an array!');
-            }
+            assert(typeof name === 'string', 'name must be a string!');
+            assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number!');
+            assert(typeof price === 'number', 'price must be a number!');
             next();
         } catch (err) {
             // Return status + message to error handler
