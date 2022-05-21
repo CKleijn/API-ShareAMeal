@@ -177,7 +177,7 @@ const userController = {
                 // Return JSON with response
                 res.status(200).json({
                     status: 200,
-                    result: formatUser(results)
+                    result: formatUser([results])
                 });
                 res.end();
             });
