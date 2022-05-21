@@ -16,7 +16,6 @@ const CLEAR_PARTICIPANTS_TABLE = 'DELETE IGNORE FROM `meal_participants_user`;';
 const CLEAR_USERS_TABLE = 'DELETE IGNORE FROM `user`;';
 const CLEAR_DB = CLEAR_MEAL_TABLE + CLEAR_PARTICIPANTS_TABLE + CLEAR_USERS_TABLE;
 
-const INSERT_MEALS = 'INSERT INTO `meal` (`id`, `name`, `description`, `dateTime`, `imageUrl`, `maxAmountOfParticipants`, `price`, `cookId`) VALUES (1, "Meal A", "description", "2022-03-22T15:35:00.000Z", "image url", 5, 6.50, 1), (2, "Meal B", "description", "2022-03-22T15:35:00.000Z", "image url", 5, 6.50, 1);';
 const INSERT_USER = 'INSERT INTO `user` (`id`, `firstName`, `lastName`, `isActive`, `emailAdress`, `password`, `street`, `city`) VALUES' + '(1, "first", "last", "1", "test@server.nl", "$2b$10$Knhkqh3u.SclJv4P6E0iqeUckIPUdEjv3pvHWtrYkEjkfcg4h2eoW", "street", "city");';
 const INSERT_SECOND_USER = 'INSERT INTO `user` (`id`, `firstName`, `lastName`, `isActive`, `emailAdress`, `password`, `street`, `city`) VALUES' + '(2, "first2", "last2", "0", "test2@server.nl", "$2b$10$Knhkqh3u.SclJv4P6E0iqeUckIPUdEjv3pvHWtrYkEjkfcg4h2eoW", "street2", "city2");';
 
@@ -26,7 +25,7 @@ describe('User testsets', () => {
         dbconnection.getConnection((err, connection) => {
             if (err) throw err;
 
-            connection.query(CLEAR_DB + INSERT_USER + INSERT_SECOND_USER + INSERT_MEALS, (err, results, fields) => {
+            connection.query(CLEAR_DB + INSERT_USER + INSERT_SECOND_USER, (err, results, fields) => {
                 if (err) throw err;
                 connection.release();
                 done();
