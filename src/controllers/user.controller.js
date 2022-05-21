@@ -177,7 +177,7 @@ const userController = {
                 // Return JSON with response
                 res.status(200).json({
                     status: 200,
-                    result: formatUser([results])
+                    result: formatUser(results)
                 });
                 res.end();
             });
@@ -424,10 +424,6 @@ const formatUser = (results) => {
     // If results are empty return it
     if(results.length === 0) {
         return [];
-    }
-    // If length is 1 than set results[0]
-    if(results.length === 1) {
-        results = results[0];
     }
     // Take each result
     results.forEach(result => {
