@@ -160,11 +160,12 @@ const mealController = {
             const meal = {
                     ...req.body
                 }
+            const date = new Date(req.body.dateTime).toISOString().slice(0, 19).replace("T", " ");
             // From array to string
             meal.allergenes = meal.allergenes.join();
             // Create the meal    
             connection.query('INSERT INTO meal (name, description, isVega, isVegan, isToTakeHome, dateTime, imageUrl, maxAmountOfParticipants, price, allergenes, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                            [meal.name, meal.description, meal.isVega, meal.isVegan, meal.isToTakeHome, meal.dateTime, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
+                            [meal.name, meal.description, meal.isVega, meal.isVegan, meal.isToTakeHome, date, meal.imageUrl, meal.maxAmountOfParticipants, meal.price, meal.allergenes, req.userId], 
                             (err, results, fields) => {
                 if (err) throw err;
                 // Get mealId
@@ -343,6 +344,9 @@ const mealController = {
                             ...resultsMeal[0],
                             ...req.body
                         }
+                    if(req.body.dateTime) {
+                        updatedMeal.dateTime = new Date(req.body.dateTime).toISOString().slice(0, 19).replace("T", " ");
+                    }
                     // From array to string
                     if(req.body.allergenes) {
                         updatedMeal.allergenes = updatedMeal.allergenes.join();
@@ -428,37 +432,37 @@ const mealController = {
             // Get cookId from token
             const cookId = req.userId;
             // Get the meal with the given mealId
-            connection.query('SELECT COUNT(id) as count, cookId FROM meal WHERE id = ?', mealId, function (err, results, fields) {
+            connection.query('SELECT * FROM meal WHERE id = ?', mealId, function (err, results, fields) {
                 if (err) throw err;
-                // Check if there are results
-                if (!results[0].count) {
-                    // Return status + message to error handler
-                    return next({
-                        status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
-                    });
-                } else {
-                    if (results[0].cookId !== cookId) {
+                // If a meal is found get into the if statement
+                if(results.length > 0) {
+                    // Check if id's aren't equal
+                    if(cookId !== results[0].cookId) {
                         // Return status + message to error handler
                         return next({
                             status: 403,
                             message: 'Not the owner of the data!'
                         });
-                    } else {
-                        // Delete the meal
-                        connection.query('DELETE FROM meal WHERE id = ?', mealId, function (err, results, fields) {
-                            connection.release();
-                        
-                            if (err) throw err;
-            
-                            // Return JSON with response
-                            res.status(200).json({
-                                status: 200,
-                                message: 'Meal has been removed!'
-                            });
-                            res.end();
-                        });
                     }
+                    // Delete the meal
+                    connection.query('DELETE FROM meal WHERE id = ?', mealId, function (err, results, fields) {
+                        connection.release();
+                    
+                        if (err) throw err;
+        
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            message: 'Meal has been removed!'
+                        });
+                        res.end();
+                    });
+                } else {
+                    // Return status + message to error handler
+                    return next({
+                        status: 404,
+                        message: 'Meal does not exist'
+                    });
                 }
             });
         });
