@@ -696,75 +696,75 @@ describe('Meal testsets', () => {
         });
     });
 
-    // describe('UC-305 Delete meal', () => {
-    //     it('TC-305-2 Not logged in', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/meal/1')
-    //             // User not logged in
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(401);
-    //                 message.should.be.a('string').that.equals('Not logged in!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-304-3 Not owner of the data', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/meal/1')
-    //             // Not the owner of the data
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(403);
-    //                 message.should.be.a('string').that.equals('Not the owner of the data!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-304-4 Meal doesnt exist', (done) => {
-    //         chai.request(server)
-    //             // Meal doesnt exist
-    //             .delete('/api/meal/0')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(404);
-    //                 message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-304-5 Meal has been deleted successfully', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/meal/1')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(200);
-    //                 message.should.be.a('string').that.equals('Meal has been removed!');
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe('UC-305 Delete meal', () => {
+        it('TC-305-2 Not logged in', (done) => {
+            chai.request(server)
+                .delete('/api/meal/1')
+                // User not logged in
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(401);
+                    message.should.be.a('string').that.equals('Not logged in!');
+                    done();
+                });
+        });
+        it('TC-304-3 Not owner of the data', (done) => {
+            chai.request(server)
+                .delete('/api/meal/1')
+                // Not the owner of the data
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(403);
+                    message.should.be.a('string').that.equals('Not the owner of the data!');
+                    done();
+                });
+        });
+        it('TC-304-4 Meal doesnt exist', (done) => {
+            chai.request(server)
+                // Meal doesnt exist
+                .delete('/api/meal/0')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(404);
+                    message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
+                    done();
+                });
+        });
+        it('TC-304-5 Meal has been deleted successfully', (done) => {
+            chai.request(server)
+                .delete('/api/meal/1')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(200);
+                    message.should.be.a('string').that.equals('Meal has been removed!');
+                    done();
+                });
+        });
+    });
 
     // describe('UC-401 Participate meal', () => {
     //     it('TC-401-1 Not logged in', (done) => {
