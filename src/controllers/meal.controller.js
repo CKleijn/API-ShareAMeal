@@ -443,25 +443,33 @@ const mealController = {
                             status: 403,
                             message: 'Not the owner of the data!'
                         });
-                    }
-                    // Delete the meal
-                    connection.query('DELETE FROM meal WHERE id = ?', mealId, function (err, results, fields) {
-                        connection.release();
-                    
-                        if (err) throw err;
-        
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            message: 'Meal has been removed!'
+                    } else {
+                        // Delete the meal
+                        connection.query('DELETE FROM meal WHERE id = ?', mealId, function (err, results, fields) {
+                            connection.release();
+
+                            if (err) throw err;
+
+                            if (results.affectedRows === 1) {
+                                // Return JSON with response
+                                res.status(200).json({
+                                    status: 200,
+                                    message: 'Meal has been removed!'
+                                });
+                                res.end();
+                            } else {
+                                 // Return status + message to error handler
+                                return next({
+                                    status: 400
+                                });
+                            }
                         });
-                        res.end();
-                    });
+                    }
                 } else {
                     // Return status + message to error handler
                     return next({
                         status: 404,
-                        message: 'Meal does not exist'
+                        message: 'Meal does not exist with the id of ' + mealId
                     });
                 }
             });
