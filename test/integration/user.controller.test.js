@@ -233,7 +233,7 @@ describe('User testsets', () => {
                     result[0].id.should.equal(1);
                     result[0].firstName.should.equal('first');
                     result[0].lastName.should.equal('last');
-                    result[0].isActive.should.equal(1);
+                    result[0].isActive.should.equal(true);
                     result[0].street.should.equal('street');
                     result[0].city.should.equal('city');
                     result[0].emailAdress.should.equal('test@server.nl');
@@ -244,7 +244,7 @@ describe('User testsets', () => {
                     result[1].id.should.equal(2);
                     result[1].firstName.should.equal('first2');
                     result[1].lastName.should.equal('last2');
-                    result[1].isActive.should.equal(0);
+                    result[1].isActive.should.equal(false);
                     result[1].street.should.equal('street2');
                     result[1].city.should.equal('city2');
                     result[1].emailAdress.should.equal('test2@server.nl');
@@ -301,7 +301,7 @@ describe('User testsets', () => {
                     result[0].id.should.equal(2);
                     result[0].firstName.should.equal('first2');
                     result[0].lastName.should.equal('last2');
-                    result[0].isActive.should.equal(0);
+                    result[0].isActive.should.equal(false);
                     result[0].street.should.equal('street2');
                     result[0].city.should.equal('city2');
                     result[0].emailAdress.should.equal('test2@server.nl');
@@ -340,7 +340,7 @@ describe('User testsets', () => {
                     result[0].id.should.equal(1);
                     result[0].firstName.should.equal('first');
                     result[0].lastName.should.equal('last');
-                    result[0].isActive.should.equal(1);
+                    result[0].isActive.should.equal(true);
                     result[0].street.should.equal('street');
                     result[0].city.should.equal('city');
                     result[0].emailAdress.should.equal('test@server.nl');
@@ -379,7 +379,7 @@ describe('User testsets', () => {
                     result[0].id.should.equal(1);
                     result[0].firstName.should.equal('first');
                     result[0].lastName.should.equal('last');
-                    result[0].isActive.should.equal(1);
+                    result[0].isActive.should.equal(true);
                     result[0].street.should.equal('street');
                     result[0].city.should.equal('city');
                     result[0].emailAdress.should.equal('test@server.nl');

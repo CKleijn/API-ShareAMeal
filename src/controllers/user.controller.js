@@ -434,6 +434,19 @@ const formatUser = (results) => {
     if(results.length === 0) {
         return [];
     }
+    // Format filter user
+    if(results[0].length > 0) {
+        results[0].forEach(result => {
+            // Check for each key if value is 1 or 0 and modify it to true or false
+            if(result.isActive === 1) {
+                result.isActive = true;
+            } else {
+                result.isActive = false;
+            }
+        });
+        // Assign the modified values to the results object
+        return results[0];
+    }
     // Take each result
     results.forEach(result => {
         // Get the values that we want to modify
