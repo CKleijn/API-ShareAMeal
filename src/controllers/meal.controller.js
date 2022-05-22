@@ -457,11 +457,6 @@ const mealController = {
                                     message: 'Meal has been removed!'
                                 });
                                 res.end();
-                            } else {
-                                 // Return status + message to error handler
-                                return next({
-                                    status: 400
-                                });
                             }
                         });
                     }
