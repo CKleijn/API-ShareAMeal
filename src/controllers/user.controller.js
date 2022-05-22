@@ -371,61 +371,49 @@ const userController = {
     },
     // DELETE user with given userId
     deleteUserById: (req, res, next) => {
-        //save parameter (id) in variable
-        const id = Number(req.params.id);
-
-        //check if parameter is a number
-        if (isNaN(id)) {
-            return next();
-        }
-
-        //create connection
-        dbconnection.getConnection((err, connection) => {
-            //throw error if something went wrong
+        // Open connection and throw an error if it exist
+        dbconnection.getConnection(function(err, connection) {
             if (err) throw err;
-
-            connection.query("SELECT COUNT(id) as count FROM user WHERE id = ?", id, (err, results, fields) => {
+            // Get userId paramater from URL
+            const paramUserId = req.params.userId;
+            // Check if userId isnt a number
+            if (isNaN(paramUserId)) {
+                return next();
+            }
+            // Get userId paramater from URL
+            const userId = req.userId;
+            // Get the user with the given userId
+            connection.query('SELECT * FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
                 if (err) throw err;
-
-                if (!results[0].count) {
-                    //if the user isn't found return a fitting error response
-                    return next({
-                        status: 400,
-                        message: `User does not exist`,
-                    });
-                } else {
-                    if (req.userId === id) {
-                        connection.query("DELETE FROM user WHERE id = ?", id, (err, results, fields) => {
-                            //throw error if something went wrong
-                            if (err) throw err;
-
-                            //close connection
-                            connection.release();
-
-                            //if a row has been deleted
-                            if (results.affectedRows === 1) {
-                                //send successful status
-                                res.status(200).json({
-                                    status: 200,
-                                    message: "User has been deleted successfully.",
-                                });
-
-                                //end response process
-                                res.end();
-                            } else {
-                                //if no rows have been affected, return fitting error (very unlikely)
-                                return next({
-                                    status: 409,
-                                    message: "No user has been deleted",
-                                });
-                            }
-                        });
-                    } else {
-                        res.status(403).json({
+                // If an user is found get into the if statement
+                if(results.length > 0) {
+                     // Check if id's aren't equal
+                    if(paramUserId != userId) {
+                        // Return status + message to error handler
+                        return next({
                             status: 403,
-                            message: "You can't delete this account because it isn't yours",
+                            message: 'Not the owner of this account!'
                         });
                     }
+                    // Delete the user
+                    connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
+                        connection.release();
+                    
+                        if (err) throw err;
+        
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            message: 'User has been deleted!'
+                        });
+                        res.end();
+                    });
+                } else {
+                    // Return status + message to error handler
+                    return next({
+                        status: 400,
+                        message: 'User does not exist'
+                    });
                 }
             });
         });
