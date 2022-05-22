@@ -420,52 +420,56 @@ const mealController = {
     },
     // DELETE meal with given mealId
     deleteMealById: (req, res, next) => {
-        // Open connection and throw an error if it exist
-        dbconnection.getConnection(function(err, connection) {
+        //save parameter (id) in variable
+        const id = Number(req.params.id);
+
+        //check if parameter is a number
+        if (isNaN(id)) {
+            return next();
+        }
+
+        //create connection
+        dbconnection.getConnection((err, connection) => {
+            //throw error if something went wrong
             if (err) throw err;
-            // Get mealId paramater from URL
-            const mealId = req.params.mealId;
-            // Check if mealId isnt a number
-            if (isNaN(mealId)) {
-                return next();
-            }
-            // Get cookId from token
-            const cookId = req.userId;
-            // Get the meal with the given mealId
-            connection.query('SELECT * FROM meal WHERE id = ?', mealId, function (err, results, fields) {
+
+            connection.query("SELECT COUNT(id) as count, cookId FROM meal WHERE id = ?", id, (err, results, fields) => {
+                //throw error if something went wrong
                 if (err) throw err;
-                // If a meal is found get into the if statement
-                if(results.length > 0) {
-                    // Check if id's aren't equal
-                    if(cookId !== results[0].cookId) {
-                        // Return status + message to error handler
-                        return next({
+
+                if (!results[0].count) {
+                    //if the meal isn't found return a fitting error response
+                    return next({
+                        status: 404,
+                        message: `Meal does not exist`,
+                    });
+                } else {
+                    if (results[0].cookId !== req.userId) {
+                        res.status(403).json({
                             status: 403,
-                            message: 'Not the owner of the data!'
+                            message: "You are not the owner of this meal",
                         });
                     } else {
-                        // Delete the meal
-                        connection.query('DELETE FROM meal WHERE id = ?', mealId, function (err, results, fields) {
-                            connection.release();
-
+                        connection.query("DELETE FROM meal WHERE id = ?", id, (err, results, fields) => {
+                            //throw error if something went wrong
                             if (err) throw err;
 
+                            //close connection
+                            connection.release();
+
+                            //if a row has been deleted
                             if (results.affectedRows === 1) {
-                                // Return JSON with response
+                                //send successful status
                                 res.status(200).json({
                                     status: 200,
-                                    message: 'Meal has been removed!'
+                                    message: "Meal has been deleted successfully.",
                                 });
+
+                                //end response process
                                 res.end();
                             }
                         });
                     }
-                } else {
-                    // Return status + message to error handler
-                    return next({
-                        status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
-                    });
                 }
             });
         });
