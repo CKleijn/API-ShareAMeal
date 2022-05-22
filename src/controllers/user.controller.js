@@ -405,25 +405,32 @@ const userController = {
                                 connection.query('DELETE FROM meal WHERE cookId = ?', result.cookId, function (err, results, fields) {
                                     if (err) throw err;
                                 });
-                                // Delete all meals where user is participating in
-                                connection.query('DELETE FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
+                                // Get all results where user is participating in
+                                connection.query('SELECT * FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
                                     if (err) throw err;
+                                    // Check if there are any results
+                                    if(results.length > 0) {
+                                        // Delete all meals where user is participating in
+                                        connection.query('DELETE FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
+                                            if (err) throw err;
+                                        });
+                                    }
                                 });
                             });
                         }
-                    });
-                    // Delete the user
-                    connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
-                        connection.release();
-                    
-                        if (err) throw err;
-        
-                        // Return JSON with response
-                        res.status(200).json({
-                            status: 200,
-                            message: 'User has been deleted!'
+                        // Delete the user
+                        connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
+                            connection.release();
+                        
+                            if (err) throw err;
+            
+                            // Return JSON with response
+                            res.status(200).json({
+                                status: 200,
+                                message: 'User has been deleted!'
+                            });
+                            res.end();
                         });
-                        res.end();
                     });
                 } else {
                     // Return status + message to error handler
