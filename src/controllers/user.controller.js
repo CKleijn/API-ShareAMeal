@@ -395,44 +395,18 @@ const userController = {
                             message: 'Not the owner of this account!'
                         });
                     }
-                    // Get all meals where user is cook
-                    connection.query('SELECT * FROM meal WHERE cookId = ?', paramUserId, function (err, results, fields) {
+                    // Delete the user
+                    connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
+                        connection.release();
+                    
                         if (err) throw err;
-                        // Check if there are any results
-                        if(results.length > 0) {
-                            // Get all results where user is participating in
-                            connection.query('SELECT * FROM meal_participants_user WHERE userId = ?', paramUserId, function (err, results, fields) {
-                                if (err) throw err;
-                                // Check if there are any results
-                                if(results.length > 0) {
-                                    results.forEach(result => {
-                                        // Delete all meals where user is participating in
-                                        connection.query('DELETE FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
-                                            if (err) throw err;
-                                        });
-                                    });
-                                }
-                            });
-                            results.forEach(result => {
-                                // Delete all meals where user is cook
-                                connection.query('DELETE FROM meal WHERE cookId = ?', result.cookId, function (err, results, fields) {
-                                    if (err) throw err;
-                                });
-                            });
-                        }
-                        // Delete the user
-                        connection.query('DELETE FROM user WHERE id = ?', paramUserId, function (err, results, fields) {
-                            connection.release();
-                        
-                            if (err) throw err;
-            
-                            // Return JSON with response
-                            res.status(200).json({
-                                status: 200,
-                                message: 'User has been deleted!'
-                            });
-                            res.end();
+        
+                        // Return JSON with response
+                        res.status(200).json({
+                            status: 200,
+                            message: 'User has been deleted!'
                         });
+                        res.end();
                     });
                 } else {
                     // Return status + message to error handler
