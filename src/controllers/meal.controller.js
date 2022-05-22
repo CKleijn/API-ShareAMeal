@@ -137,7 +137,7 @@ const mealController = {
                                 // Return status + message to error handler
                                 return next({
                                     status: 404,
-                                    message: 'User does not exist with the id of ' + meal.cookId
+                                    message: 'User does not exist'
                                 });
                             }
                         });
@@ -224,7 +224,7 @@ const mealController = {
                                     // Return status + message to error handler
                                     return next({
                                         status: 404,
-                                        message: 'User does not exist with the id of ' + fullMeal.cookId
+                                        message: 'User does not exist'
                                     });
                                 }
                             });
@@ -232,7 +232,7 @@ const mealController = {
                             // Return status + message to error handler
                             return next({
                                 status: 404,
-                                message: 'Meal does not exist with the id of ' + mealId
+                                message: 'Meal does not exist'
                             });
                         }
                     });
@@ -300,7 +300,7 @@ const mealController = {
                             // Return status + message to error handler
                             return next({
                                 status: 404,
-                                message: 'User does not exist with the id of ' + fullMeal.cookId
+                                message: 'User does not exist'
                             });
                         }
                     });
@@ -308,7 +308,7 @@ const mealController = {
                     // Return status + message to error handler
                     return next({
                         status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
+                        message: 'Meal does not exist'
                     });
                 }
             });
@@ -403,7 +403,7 @@ const mealController = {
                                 // Return status + message to error handler
                                 return next({
                                     status: 404,
-                                    message: 'User does not exist with the id of ' + fullMeal.cookId
+                                    message: 'User does not exist'
                                 });
                             }
                         });
@@ -412,7 +412,7 @@ const mealController = {
                     // Return status + message to error handler
                     return next({
                         status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
+                        message: 'Meal does not exist'
                     });
                 }
             });
@@ -462,7 +462,7 @@ const mealController = {
                     // Return status + message to error handler
                     return next({
                         status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
+                        message: 'Meal does not exist'
                     });
                 }
             });
@@ -482,10 +482,10 @@ const mealController = {
             // Get currentUser from token
             const currentUser = req.userId;
             // Get the meal with the given mealId
-            connection.query('SELECT *, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId WHERE meal.id = ?', mealId, function (err, results, fields) {
+            connection.query('SELECT id, cookId, maxAmountOfParticipants, COUNT(meal_participants_user.userId) AS currentParticipants FROM meal JOIN meal_participants_user ON meal.id = meal_participants_user.mealId GROUP BY id HAVING id = ?', mealId, function (err, results, fields) {
                 if (err) throw err;
                 // Check if there are any results
-                if(results[0].id !== null) {
+                if(results[0] !== undefined) {
                     // Get cookId
                     let cookId = results[0].cookId;
                     // Get currentAmountOfParticipants
@@ -554,7 +554,7 @@ const mealController = {
                      // Return status + message to error handler
                      return next({
                         status: 404,
-                        message: 'Meal does not exist with the id of ' + mealId
+                        message: 'Meal does not exist'
                     });
                 }
             });

@@ -312,7 +312,7 @@ describe('Meal testsets', () => {
                             .that.has.all.keys('status', 'message')
                     let { status, message } = res.body;
                     status.should.equals(404);
-                    message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
+                    message.should.be.a('string').that.equals('Meal does not exist');
                     done();
                 });
         });
@@ -608,7 +608,7 @@ describe('Meal testsets', () => {
                             .that.has.all.keys('status', 'message')
                     let { status, message } = res.body;
                     status.should.equals(404);
-                    message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
+                    message.should.be.a('string').that.equals('Meal does not exist');
                     done();
                 });
         });
@@ -743,7 +743,7 @@ describe('Meal testsets', () => {
                             .that.has.all.keys('status', 'message')
                     let { status, message } = res.body;
                     status.should.equals(404);
-                    message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
+                    message.should.be.a('string').that.equals('Meal does not exist');
                     done();
                 });
         });
@@ -766,117 +766,117 @@ describe('Meal testsets', () => {
         });
     });
 
-    // describe('UC-401 Participate meal', () => {
-    //     it('TC-401-1 Not logged in', (done) => {
-    //         chai.request(server)
-    //             .get('/api/meal/1/participate')
-    //             // User not logged in
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(401);
-    //                 message.should.be.a('string').that.equals('Not logged in!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-401-2 Meal doesnt exist', (done) => {
-    //         chai.request(server)
-    //             // Meal doesnt exist
-    //             .get('/api/meal/0/participate')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(404);
-    //                 message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-401-3 Participated successfully', (done) => {
-    //         chai.request(server)
-    //             .get('/api/meal/2/participate')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'result')
-    //                 let { status, result } = res.body;
-    //                 status.should.equals(200);
-    //                 // Result should have those keys
-    //                 result.should.have.property('currentlyParticipating');
-    //                 result.should.have.property('currentAmountOfParticipants'),
-    //                 // Those keys should have those values
-    //                 result.currentlyParticipating.should.equal(true);
-    //                 result.currentAmountOfParticipants.should.equal(2);
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe('UC-401 Participate meal', () => {
+        it('TC-401-1 Not logged in', (done) => {
+            chai.request(server)
+                .get('/api/meal/1/participate')
+                // User not logged in
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(401);
+                    message.should.be.a('string').that.equals('Not logged in!');
+                    done();
+                });
+        });
+        it('TC-401-2 Meal doesnt exist', (done) => {
+            chai.request(server)
+                // Meal doesnt exist
+                .get('/api/meal/0/participate')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(404);
+                    message.should.be.a('string').that.equals('Meal does not exist');
+                    done();
+                });
+        });
+        it('TC-401-3 Participated successfully', (done) => {
+            chai.request(server)
+                .get('/api/meal/2/participate')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'result')
+                    let { status, result } = res.body;
+                    status.should.equals(200);
+                    // Result should have those keys
+                    result.should.have.property('currentlyParticipating');
+                    result.should.have.property('currentAmountOfParticipants'),
+                    // Those keys should have those values
+                    result.currentlyParticipating.should.equal(true);
+                    result.currentAmountOfParticipants.should.equal(2);
+                    done();
+                });
+        });
+    });
 
-    // describe('UC-402 Unsubcribe meal', () => {
-    //     it('TC-402-1 Not logged in', (done) => {
-    //         chai.request(server)
-    //             .get('/api/meal/1/participate')
-    //             // User not logged in
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(401);
-    //                 message.should.be.a('string').that.equals('Not logged in!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-402-2 Meal doesnt exist', (done) => {
-    //         chai.request(server)
-    //             // Meal doesnt exist
-    //             .get('/api/meal/0/participate')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(404);
-    //                 message.should.be.a('string').that.equals('Meal does not exist with the id of 0');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-402-3 Unsubcribe successfully', (done) => {
-    //         chai.request(server)
-    //             .get('/api/meal/1/participate')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'result')
-    //                 let { status, result } = res.body;
-    //                 status.should.equals(200);
-    //                 // Result should have those keys
-    //                 result.should.have.property('currentlyParticipating');
-    //                 result.should.have.property('currentAmountOfParticipants'),
-    //                 // Those keys should have those values
-    //                 result.currentlyParticipating.should.equal(false);
-    //                 result.currentAmountOfParticipants.should.equal(1);
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe('UC-402 Unsubcribe meal', () => {
+        it('TC-402-1 Not logged in', (done) => {
+            chai.request(server)
+                .get('/api/meal/1/participate')
+                // User not logged in
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(401);
+                    message.should.be.a('string').that.equals('Not logged in!');
+                    done();
+                });
+        });
+        it('TC-402-2 Meal doesnt exist', (done) => {
+            chai.request(server)
+                // Meal doesnt exist
+                .get('/api/meal/0/participate')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(404);
+                    message.should.be.a('string').that.equals('Meal does not exist');
+                    done();
+                });
+        });
+        it('TC-402-3 Unsubcribe successfully', (done) => {
+            chai.request(server)
+                .get('/api/meal/1/participate')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'result')
+                    let { status, result } = res.body;
+                    status.should.equals(200);
+                    // Result should have those keys
+                    result.should.have.property('currentlyParticipating');
+                    result.should.have.property('currentAmountOfParticipants'),
+                    // Those keys should have those values
+                    result.currentlyParticipating.should.equal(false);
+                    result.currentAmountOfParticipants.should.equal(1);
+                    done();
+                });
+        });
+    });
 });
