@@ -654,73 +654,73 @@ describe('User testsets', () => {
         });
     });
 
-    // describe('UC-206 Delete user', () => {
-    //     it('TC-206-1 User doesnt exist', (done) => {
-    //         chai.request(server)
-    //             // User doesnt exist
-    //             .delete('/api/user/0')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message');
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(400);
-    //                 message.should.be.a('string').that.equals('User does not exist');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-206-2 Not logged in', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/user/1')
-    //             // Not logged in
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(401);
-    //                 message.should.be.a('string').that.equals('Not logged in!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-206-3 Actor is not the owner', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/user/2')
-    //             // Not the owner of the data
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message')
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(403);
-    //                 message.should.be.a('string').that.equals('Not the owner of this account!');
-    //                 done();
-    //             });
-    //     });
-    //     it('TC-206-4 User has been deleted successfully', (done) => {
-    //         chai.request(server)
-    //             .delete('/api/user/2')
-    //             .set(
-    //                 'authorization',
-    //                 'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
-    //             )
-    //             .end((req, res) => {
-    //                 res.body.should.be
-    //                         .an('object')
-    //                         .that.has.all.keys('status', 'message');
-    //                 let { status, message } = res.body;
-    //                 status.should.equals(200);
-    //                 message.should.be.a('string').that.equals('User has been deleted!');
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe('UC-206 Delete user', () => {
+        it('TC-206-1 User doesnt exist', (done) => {
+            chai.request(server)
+                // User doesnt exist
+                .delete('/api/user/0')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message');
+                    let { status, message } = res.body;
+                    status.should.equals(400);
+                    message.should.be.a('string').that.equals('User does not exist');
+                    done();
+                });
+        });
+        it('TC-206-2 Not logged in', (done) => {
+            chai.request(server)
+                .delete('/api/user/1')
+                // Not logged in
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(401);
+                    message.should.be.a('string').that.equals('Not logged in!');
+                    done();
+                });
+        });
+        it('TC-206-3 Actor is not the owner', (done) => {
+            chai.request(server)
+                .delete('/api/user/2')
+                // Not the owner of the data
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 1 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message')
+                    let { status, message } = res.body;
+                    status.should.equals(403);
+                    message.should.be.a('string').that.equals('Not the owner of this account!');
+                    done();
+                });
+        });
+        it('TC-206-4 User has been deleted successfully', (done) => {
+            chai.request(server)
+                .delete('/api/user/2')
+                .set(
+                    'authorization',
+                    'Bearer ' + jwt.sign({ userId: 2 }, jwtSecretKey)
+                )
+                .end((req, res) => {
+                    res.body.should.be
+                            .an('object')
+                            .that.has.all.keys('status', 'message');
+                    let { status, message } = res.body;
+                    status.should.equals(200);
+                    message.should.be.a('string').that.equals('User has been deleted!');
+                    done();
+                });
+        });
+    });
 });
