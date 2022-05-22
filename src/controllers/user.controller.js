@@ -405,17 +405,6 @@ const userController = {
                                 connection.query('DELETE FROM meal WHERE cookId = ?', result.cookId, function (err, results, fields) {
                                     if (err) throw err;
                                 });
-                                // Get all results where user is participating in
-                                connection.query('SELECT * FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
-                                    if (err) throw err;
-                                    // Check if there are any results
-                                    if(results.length > 0) {
-                                        // Delete all meals where user is participating in
-                                        connection.query('DELETE FROM meal_participants_user WHERE userId = ?', result.cookId, function (err, results, fields) {
-                                            if (err) throw err;
-                                        });
-                                    }
-                                });
                             });
                         }
                         // Delete the user
