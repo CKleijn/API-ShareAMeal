@@ -174,12 +174,21 @@ const userController = {
             
                 if (err) throw err;
 
-                // Return JSON with response
-                res.status(200).json({
-                    status: 200,
-                    result: formatUser(results)
-                });
-                res.end();
+                if(req.query) {
+                    // Return JSON with response
+                    res.status(200).json({
+                        status: 200,
+                        result: formatUser([results])
+                    });
+                    res.end();
+                } else {
+                    // Return JSON with response
+                    res.status(200).json({
+                        status: 200,
+                        result: formatUser(results)
+                    });
+                    res.end();
+                }
             });
         });
     },
